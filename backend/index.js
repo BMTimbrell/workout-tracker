@@ -12,7 +12,7 @@ app.use(
         secret: 'asdawac21',
         cookie: { 
             maxAge: 300000000,
-            sameSite: 'none',
+            sameSite: true,
             secure: true
         },
         resave: true,
@@ -21,7 +21,7 @@ app.use(
 );
 
 app.use(cors({
-    origin: 'https://weight-tracker-mey7.onrender.com',
+    origin: 'https://localhost/3000',
     credentials: true
 }));
 
@@ -45,15 +45,15 @@ app.listen(port, () => {
 });
 
 app.get('/users/:id', db.checkUserAuthorised, db.getUserById);
-app.put('/users/:id', db.checkUserAuthorised, db.checkEmailExists, db.updateUser);
-app.post('/register', db.checkEmailExists, db.createUser);
-app.post('/login', passport.authenticate('local', {failureRedirect: '/login', failureMessage: true}), 
+// app.put('/users/:id', db.checkUserAuthorised, db.checkEmailExists, db.updateUser);
+// app.post('/register', db.checkEmailExists, db.createUser);
+app.post('/login', passport.authenticate('local', {failureRedirect: '/loginfailed', failureMessage: true}), 
     (req, res) => {
         res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.redirect(303, "../users/" + req.user.id);
     }
 );
-app.get('/login', (req, res) => {
+app.get('/loginfailed', (req, res) => {
     res.status(401).json({ message: 'login failed' });
 });
 app.get('/logout', (req, res, next) => {
