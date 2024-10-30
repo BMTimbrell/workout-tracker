@@ -9,11 +9,11 @@ const db = require('./queries');
 
 app.use(
     session({
-        secret: 'asdawac21',
+        secret: 'afgafaca',
         cookie: { 
-            maxAge: 300000000,
-            sameSite: true,
-            secure: true
+            maxAge: 80000000,
+            sameSite: process.env.PORT ? 'none' : 'lax',
+            secure: process.env.PORT ? true : 'auto'
         },
         resave: true,
         saveUninitialized: true
@@ -21,7 +21,7 @@ app.use(
 );
 
 app.use(cors({
-    origin: 'https://localhost/3000',
+    origin: 'http://localhost:3000',
     credentials: true
 }));
 
@@ -46,19 +46,21 @@ app.listen(port, () => {
 
 app.get('/users/:id', db.checkUserAuthorised, db.getUserById);
 // app.put('/users/:id', db.checkUserAuthorised, db.checkEmailExists, db.updateUser);
-// app.post('/register', db.checkEmailExists, db.createUser);
-app.post('/login', passport.authenticate('local', {failureRedirect: '/loginfailed', failureMessage: true}), 
+app.post('/register', db.checkEmailExists, db.createUser);
+app.post('/login', passport.authenticate('local', { failureRedirect: '/loginfailed', failureMessage: true }), 
     (req, res) => {
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
-        res.redirect(303, "../users/" + req.user.id);
+        res.status(200).send({ id: req.user.id });
     }
 );
 app.get('/loginfailed', (req, res) => {
-    res.status(401).json({ message: 'login failed' });
+    res.status(401).json({ message: 'wrong password' });
 });
 app.get('/logout', (req, res, next) => {
     req.logout((error) => {
         if (error) return next(error);
-        res.status(200).json({message: 'logout successful'});
+        res.status(200).json({ message: 'logout successful' });
     });
 });
+
+app.get('/users/:id/exercises', db.checkUserAuthorised, db.getExercises);
+app.get('/users/:id/exercises/:name', db.checkUserAuthorised, db.searchExercises);

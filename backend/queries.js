@@ -56,14 +56,15 @@ const createUser = async (req, res) => {
 passport.use(new LocalStrategy({ usernameField: 'email' }, function verify(email, password, done) {
     pool.query('SELECT * FROM users WHERE email = $1', [email], async (error, user) => {
         if (error) return done(error);
-        if (!user.rows) {
-            return done(new Error('User doesn\'t exist!'));
+
+        if (!user.rows.length) {
+            return done(null, false);
         }
 
         //Check passwords match
         try {
             const matchedPassword = await bcrypt.compare(password, user.rows[0].password);
-            if (!matchedPassword) return done(new Error('Incorrect password!'));
+            if (!matchedPassword) return done(null, false);
             return done(null, user.rows[0]);
         } catch (error) {
             return done(error);
@@ -86,7 +87,7 @@ passport.deserializeUser(function (id, done) {
 const checkUserAuthorised = (req, res, next) => {
     const id = parseInt(req.params.id);
     if (parseInt(req?.user?.id) === id) next();
-    else return res.status(401).json({error: 'You must be logged in as this user to access this resource'});
+    else return res.status(401).json({message: 'You must be logged in as this user to access this resource'});
 };
 
 const getUserById = async (req, res) => {
@@ -105,9 +106,54 @@ const getUserById = async (req, res) => {
     }
 };
 
+const getExercises = async (req, res, next) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        const exercises = await pool.query(
+            'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description, array_agg(muscles.name) as muscles '
+            + 'FROM exercises '
+            + 'INNER JOIN muscles_exercises ON muscles_exercises.exercise_id = exercises.id '
+            + 'INNER JOIN muscles ON muscles.id = muscles_exercises.muscle_id '
+            + 'WHERE exercises.user_id IS NULL OR exercises.user_id = $1 '
+            + 'GROUP BY exercises.id '
+            + 'ORDER BY exercises.name', [id]
+        );
+
+        return res.status(200).json({exercises: exercises.rows});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
+const searchExercises = async (req, res) => {
+    const id = parseInt(req.params.id);
+    const name = req.params.name;
+
+    try {
+        const exercises = await pool.query(
+            'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description, array_agg(muscles.name) as muscles '
+            + 'FROM exercises '
+            + 'INNER JOIN muscles_exercises ON muscles_exercises.exercise_id = exercises.id '
+            + 'INNER JOIN muscles ON muscles.id = muscles_exercises.muscle_id '
+            + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND LOWER(exercises.name) LIKE LOWER($2) "
+            + 'GROUP BY exercises.id '
+            + 'ORDER BY exercises.name', [id, "%" + name + "%"]
+        );
+
+        return res.status(200).json({exercises: exercises.rows});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
 module.exports = {
     checkUserAuthorised,
     getUserById,
     checkEmailExists,
-    createUser
+    createUser,
+    getExercises,
+    searchExercises
 };
