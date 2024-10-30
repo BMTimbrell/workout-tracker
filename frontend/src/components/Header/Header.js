@@ -1,5 +1,6 @@
 import { NavLink, Link } from 'react-router-dom';
 import { useUserContext } from '../../hooks/UserContext';
+import useEventListener from '../../hooks/useEventListener';
 import styles from './Header.module.css';
 import { faPlus, faRightToBracket, faRightFromBracket, faUser, faDumbbell, faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,6 +15,11 @@ export default function Header() {
         if (!user) return;
         setShowMenu(false);
     }
+
+    useEventListener("resize", () => {
+        const navigationHeight = document.querySelector('header').offsetHeight;
+        document.querySelector('header').style.setProperty('--header-height', navigationHeight + 'px');
+    });
 
     return (
         <header className={styles.header}>
