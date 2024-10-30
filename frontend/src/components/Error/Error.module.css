@@ -1,0 +1,12 @@
+.error {
+    background-color: #fce4e4;
+    border: 1px solid #fcc2c3;
+    padding: 20px 30px;
+    margin-inline: auto;
+    max-width: 500px;
+    color: #cc0033;
+    font-weight: bold;
+    line-height: 20px;
+    text-shadow: 1px 1px rgba(250,250,250,.3);
+    text-align: center;
+}

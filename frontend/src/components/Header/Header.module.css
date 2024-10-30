@@ -1,0 +1,122 @@
+.header {
+    --header-bgcolor: rgb(19, 22, 26);
+    --header-height: 3.75rem;
+    --bar-width: 3.75rem;
+    --bar-height: 0.5rem;
+    --hamburger-gap: 0.375rem;
+    --hamburger-height: calc(var(--bar-height) * 3 + var(--hamburger-gap) * 2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: var(--header-bgcolor);
+    color: white;
+}
+
+.header-content {
+    min-height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 75rem;
+    margin: 0 auto;
+    padding: 1rem 1.875rem;
+}
+
+.logo {
+    font-size: 2rem;
+}
+
+.nav {
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-open {
+    translate: 0 !important;
+}
+
+.nav-list {
+    display: flex;
+    column-gap: 2.5rem;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.75);
+    transition: all 0.4s;
+}
+
+.nav-link-active, .nav-link:hover {
+    color: white;
+}
+
+.icon {
+    margin-right: 0.4rem;
+}
+
+.hamburger {
+    display: none;
+    cursor: pointer;
+    --x-width: calc(var(--hamburger-height) * 1.41421356237); /* use square root of 2 and height to get width right angle triangle */
+}
+
+.bar {
+    width: var(--bar-width);
+    height: var(--bar-height);
+    background-color: white;
+    border-radius: 99999px;
+    transition: all 0.3s ease-in-out;
+    transform-origin: left center;
+}
+
+.nav-open {
+    translate: 0 !important;
+}
+
+.hamburger-open .bar:nth-child(1) {
+    rotate: 45deg;
+    width: var(--x-width);
+    translate: 0 calc(var(--bar-height) / -2);
+}
+
+.hamburger-open .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-open .bar:nth-child(3) {
+    rotate: -45deg;
+    width: var(--x-width);
+    translate: 0 calc(var(--bar-height) / 2);
+}
+
+@media (max-width: 61.25em) {
+    .nav.logged-in {
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        width: 100%;
+        background-color: var(--header-bgcolor);
+        padding: 1rem 0 2rem;
+        translate: -100%;
+    }
+
+    .nav-list.logged-in {
+        flex-direction: column;
+        align-items: center;
+        row-gap: 1.5rem;
+    }
+
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        row-gap: var(--hamburger-gap);
+    }
+}
+
+@media (max-width: 40em) {
+    .header-content:has(.nav:not(.logged-in)) {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        row-gap: 1rem;
+    }
+}
+
