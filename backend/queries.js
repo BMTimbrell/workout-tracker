@@ -10,7 +10,7 @@ const pool = new Pool({
 
 const checkInputValid = async (req, res, next) => {
     const { email, name, password } = req.body;
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(email))
         return res.status(400).json({error: 'invalid email'});
     if (!name) 
@@ -106,17 +106,14 @@ const getUserById = async (req, res) => {
     }
 };
 
-const getExercises = async (req, res, next) => {
+const getExercises = async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
         const exercises = await pool.query(
-            'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description, array_agg(muscles.name) as muscles '
+            'SELECT id, name, bodypart, description '
             + 'FROM exercises '
-            + 'INNER JOIN muscles_exercises ON muscles_exercises.exercise_id = exercises.id '
-            + 'INNER JOIN muscles ON muscles.id = muscles_exercises.muscle_id '
             + 'WHERE exercises.user_id IS NULL OR exercises.user_id = $1 '
-            + 'GROUP BY exercises.id '
             + 'ORDER BY exercises.name', [id]
         );
 
@@ -127,22 +124,104 @@ const getExercises = async (req, res, next) => {
     }
 };
 
-const searchExercises = async (req, res) => {
+const getBodyParts = async (req, res) => {
     const id = parseInt(req.params.id);
-    const name = req.params.name;
 
     try {
-        const exercises = await pool.query(
-            'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description, array_agg(muscles.name) as muscles '
+        const bodyparts = await pool.query(
+            'SELECT DISTINCT bodypart '
+            + 'FROM exercises '
+            + 'WHERE exercises.user_id IS NULL OR exercises.user_id = $1 '
+            + 'ORDER BY bodypart', [id]
+        );
+
+        const result = bodyparts.rows.map(el => el.bodypart);
+
+        return res.status(200).json({bodyparts: result});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
+
+const searchExercises = async (req, res) => {
+    const id = parseInt(req.params.id);
+    const name = req.query.name;
+    const bodypart = req.query.bodypart;
+    let exercises = {exercises: []};
+
+    try {
+        if (bodypart && name) {
+            exercises = await pool.query(
+                'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description '
+                + 'FROM exercises '
+                + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND LOWER(exercises.name) LIKE LOWER($2) AND exercises.bodypart = $3 "
+                + 'ORDER BY exercises.name', [id, "%" + name + "%", bodypart]
+            );
+        } else if (name) {
+            exercises = await pool.query(
+                'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description '
+                + 'FROM exercises '
+                + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND LOWER(exercises.name) LIKE LOWER($2) "
+                + 'ORDER BY exercises.name', [id, "%" + name + "%"]
+            );
+        } else if (bodypart) {
+            exercises = await pool.query(
+                'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description '
+                + 'FROM exercises '
+                + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND exercises.bodypart = $2 "
+                + 'ORDER BY exercises.name', [id, bodypart]
+            );
+        }
+
+        return res.status(200).json({exercises: exercises.rows});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
+const getExerciseById = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const exerciseId = parseInt(req.params.exerciseId);
+
+    try {
+        const exercise = await pool.query(
+            'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description, array_agg(muscles.name) as muscles, array_agg(muscles_exercises.primary_muscle) as primary_muscles '
             + 'FROM exercises '
             + 'INNER JOIN muscles_exercises ON muscles_exercises.exercise_id = exercises.id '
             + 'INNER JOIN muscles ON muscles.id = muscles_exercises.muscle_id '
-            + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND LOWER(exercises.name) LIKE LOWER($2) "
+            + 'WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND exercises.id = $2 '
             + 'GROUP BY exercises.id '
-            + 'ORDER BY exercises.name', [id, "%" + name + "%"]
+            + 'ORDER BY exercises.name', [userId, exerciseId]
         );
 
-        return res.status(200).json({exercises: exercises.rows});
+        const muscles = exercise.rows[0].muscles;
+        const primaryMuscles = exercise.rows[0].primary_muscles;
+        const newMuscles = [];
+
+        for (let i = 0; i < muscles.length; i++) {
+            if (primaryMuscles[i]) {
+                newMuscles.push([muscles[i], "primary"]);
+            } else {
+                newMuscles.push([muscles[i], "secondary"]);
+            }
+        }
+
+        newMuscles.sort((a, b) => {
+            if (a[1] === b[1]) {
+                return 0;
+            } else {
+                return a[1] === "primary" ? -1 : 1;
+            }
+        });
+
+        delete exercise.rows[0].muscles;
+        delete exercise.rows[0].primary_muscles;
+        exercise.rows[0].muscles = newMuscles;
+
+        return res.status(200).json(exercise.rows[0]);
     } catch (error) {
         console.log(error);
         return res.status(500).json({error});
@@ -153,7 +232,10 @@ module.exports = {
     checkUserAuthorised,
     getUserById,
     checkEmailExists,
+    checkInputValid,
     createUser,
     getExercises,
-    searchExercises
+    getBodyParts,
+    searchExercises,
+    getExerciseById
 };

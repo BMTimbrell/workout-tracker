@@ -46,7 +46,7 @@ app.listen(port, () => {
 
 app.get('/users/:id', db.checkUserAuthorised, db.getUserById);
 // app.put('/users/:id', db.checkUserAuthorised, db.checkEmailExists, db.updateUser);
-app.post('/register', db.checkEmailExists, db.createUser);
+app.post('/register', db.checkInputValid, db.checkEmailExists, db.createUser);
 app.post('/login', passport.authenticate('local', { failureRedirect: '/loginfailed', failureMessage: true }), 
     (req, res) => {
         res.status(200).send({ id: req.user.id });
@@ -63,4 +63,6 @@ app.get('/logout', (req, res, next) => {
 });
 
 app.get('/users/:id/exercises', db.checkUserAuthorised, db.getExercises);
-app.get('/users/:id/exercises/:name', db.checkUserAuthorised, db.searchExercises);
+app.get('/users/:id/exercises/bodyparts', db.checkUserAuthorised, db.getBodyParts);
+app.get('/users/:id/exercises/search', db.checkUserAuthorised, db.searchExercises);
+app.get('/users/:id/exercises/:exerciseId', db.checkUserAuthorised, db.getExerciseById);
