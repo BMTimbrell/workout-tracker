@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { loginUser, fetchUser } from '../../api/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useUserContext } from '../../hooks/UserContext';
-import errorStyle from '../Error/Error.module.css';
 import Error from '../Error/Error';
+import errorStyles from '../Error/Error.module.css';
 
 export default function LoginForm() {
     const [formData, setFormData] = useState({
@@ -48,22 +48,43 @@ export default function LoginForm() {
 
     return (
         <form className="form" onSubmit={handleSubmit}>
-            <input 
-                type="email" 
-                name="email"
-                onChange={handleChange} 
-                placeholder="Enter Email" 
-                required 
-            />
-            <input 
-                type="password" 
-                name="password" 
-                onChange={handleChange} 
-                placeholder="Enter Password" 
-                required 
-            />
-            <button type="submit" disabled={loading}>{!loading ? 'Login' : 'Logging in...'}</button>
-            <Error style={error ? errorStyle.error : 'hidden'} text={error}  />
+
+            <div className="input-container">
+
+                <div className="floating-input">
+                    <input 
+                        id="email"
+                        type="email" 
+                        name="email"
+                        onChange={handleChange}
+                        pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" 
+                        placeholder=" " 
+                        required 
+                    />
+                    <label htmlFor="email">Email</label>
+                </div>
+
+                <div className="floating-input">
+                    <input 
+                        id="password"
+                        type="password" 
+                        name="password" 
+                        onChange={handleChange} 
+                        placeholder=" " 
+                        required 
+                    />
+                    <label htmlFor="password">Password</label>
+                </div>
+
+                <button className="button button-primary button-big" type="submit" disabled={loading}>{!loading ? 'Log in' : 'Logging in...'}</button>
+
+                {error && <Error style={errorStyles['form-error']} text={error}  />}
+
+                <p>Don't have an account? <Link className="link" to="/register">Click here</Link> to register.</p>
+
+            </div>
+
+
         </form>
     );
 }

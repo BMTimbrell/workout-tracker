@@ -1,12 +1,17 @@
 .error {
     background-color: #fce4e4;
     border: 1px solid #fcc2c3;
-    padding: 20px 30px;
+    padding: 1.25rem 1.875rem;
     margin-inline: auto;
-    max-width: 500px;
-    color: #cc0033;
+    max-width: 31.25rem;
+    color: var(--danger);
     font-weight: bold;
-    line-height: 20px;
-    text-shadow: 1px 1px rgba(250,250,250,.3);
+    line-height: 1.25rem;
+    text-shadow: 1px 1px rgba(250, 250, 250, 0.3);
     text-align: center;
+}
+
+.form-error {
+    max-width: 100% !important;
+    margin: 0 !important;
 }

@@ -18,13 +18,12 @@ export default function Register() {
                 <>
                     <h1 className="h1">Register</h1>
                     <RegistrationForm setSuccess={setSuccess} />
-                    <p className="p">Already have an account? <Link className="link" to="/login">Click here</Link> to log in.</p>
                 </>
             ) : (
                 <>
                     <h1>Registration successful!</h1>
                     <p>
-                        <Link to="/login">Sign in</Link>
+                        <Link className="link" to="/login">Sign in</Link>
                     </p>
                 </>
             )}

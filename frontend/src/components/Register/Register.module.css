@@ -1,0 +1,23 @@
+.input:not(:placeholder-shown):valid {
+    outline: 3px solid var(--success);
+}
+
+.input:not(:placeholder-shown):focus:invalid {
+    outline: 3px solid var(--warning);
+}
+
+.input:not(:placeholder-shown):invalid {
+    outline: 3px solid var(--danger);
+}
+
+.success {
+    outline: 3px solid var(--success) !important;
+}
+
+.warning {
+    outline: 3px solid var(--warning) !important;
+}
+
+.danger {
+    outline: 3px solid var(--danger) !important;
+}

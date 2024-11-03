@@ -1,8 +1,8 @@
 .header {
     --header-bgcolor: rgb(19, 22, 26);
     --header-height: 3.75rem;
-    --bar-width: 3.75rem;
-    --bar-height: 0.5rem;
+    --bar-width: 3.125rem;
+    --bar-height: 0.375rem;
     --hamburger-gap: 0.375rem;
     --hamburger-height: calc(var(--bar-height) * 3 + var(--hamburger-gap) * 2);
     position: sticky;

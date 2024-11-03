@@ -2,6 +2,7 @@ import { useUserContext } from '../../hooks/UserContext';
 import { useEffect } from 'react';
 import { logoutUser } from '../../api/api';
 import { useNavigate } from 'react-router-dom';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
 export default function Logout() {
     const { removeUser } = useUserContext();
@@ -18,5 +19,7 @@ export default function Logout() {
                 navigate('/login');
             });
     }, [navigate]);
+
+    return <LoadingSpinner />
 
 }

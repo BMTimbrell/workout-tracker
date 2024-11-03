@@ -17,8 +17,8 @@ export default function Header() {
     }
 
     useEventListener("resize", () => {
-        const navigationHeight = document.querySelector('header').offsetHeight;
-        document.querySelector('header').style.setProperty('--header-height', navigationHeight + 'px');
+        const headerHeight = document.querySelector('header').offsetHeight;
+        document.querySelector('header').style.setProperty('--header-height', headerHeight + 'px');
     });
 
     return (
