@@ -103,9 +103,28 @@ export const getExercises = async (id, controller) => {
     }
 };
 
-export const searchExercises = async (id, keywords, controller) => {
+export const searchExercises = async (id, name, bodypart, controller) => {
     try {
-        const response = await fetch(`${baseUrl}/users/${id}/exercises/${keywords}`, {
+        const response = await fetch(`${baseUrl}/users/${id}/exercises/search?name=${name}&bodypart=${bodypart}`, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            signal: controller.signal
+        });
+        
+        if (response.ok) return response.json();
+
+        return null;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
+
+export const getBodyParts = async (id, controller) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${id}/exercises/bodyparts`, {
             headers: {
                 "Content-Type": "application/json"
             },

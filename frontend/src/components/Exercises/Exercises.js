@@ -1,15 +1,17 @@
 import ExerciseList from './ExerciseList';
 import ExerciseInfo from './ExerciseInfo';
-import Modal from '../Modal/Modal';
+import Modal from '../Misc/Modal/Modal';
 import { useEffect, useState } from 'react';
 import { getExercises, searchExercises } from '../../api/api';
 import { useUserContext } from '../../hooks/UserContext';
+import useFetch from '../../hooks/useFetch';
 import { useNavigate } from 'react-router-dom';
 import styles from './Exercise.module.css';
 import { faCircleXmark, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
-import Error from '../Error/Error';
+import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
+import Error from '../Misc/Error/Error';
+import Select from '../Misc/Select/Select';
 
 export default function Exercises() {
     const { user } = useUserContext();
@@ -17,12 +19,14 @@ export default function Exercises() {
     const [error, setError] = useState(false);
     const [exercises, setExercises] = useState(null);
     const [searchText, setSearchText] = useState('');
+    const { data: bodyparts } = useFetch(user && `/users/${user?.id}/exercises/bodyparts`);
+    const [bodypart, setBodypart] = useState('');
     const [modal, setModal] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [exerciseId, setExerciseId] = useState(null);
     const navigate = useNavigate();
 
-    const handleChange = e => {
+    const handleSearchChange = e => {
         setSearchText(e.target.value);
     };
 
@@ -39,10 +43,10 @@ export default function Exercises() {
     }, [exercises, user]);
 
     useEffect(() => {
-        if (searchText) {
+        if (searchText || bodypart) {
             setLoading(true);
             const controller = new AbortController();
-            searchExercises(user.id, searchText, controller)
+            searchExercises(user.id, searchText, bodypart, controller)
                 .then(res => {
                     if (res?.message === 'You must be logged in as this user to access this resource') navigate('/logout');
                     else if (res) {
@@ -76,7 +80,11 @@ export default function Exercises() {
                 controller.abort();
             }
         }
-    }, [searchText]);
+    }, [searchText, bodypart]);
+
+    const handleSelectChange = e => {
+        setBodypart(e.target.value);
+    };
 
     return (
         <>
@@ -85,8 +93,15 @@ export default function Exercises() {
             <div className={styles["input-container"]}>
                 <button className="button button-primary"><FontAwesomeIcon icon={faPlus} /></button>
 
+                <Select onChange={handleSelectChange}>
+                    <option value="">All body parts</option>
+                    {bodyparts && bodyparts.bodyparts.map(el => (
+                        <option key={el} value={el}>{el}</option>
+                    ))}
+                </Select>
+
                 <div className={styles.search}>
-                    <input className={styles.input} type="text" onChange={handleChange} placeholder="Search" />
+                    <input className={styles.input} type="text" onChange={handleSearchChange} placeholder="Search" />
                     {searchText && 
                         <button onClick={clearSearch}>
                             <FontAwesomeIcon icon={faCircleXmark} />

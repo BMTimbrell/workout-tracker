@@ -1,0 +1,56 @@
+.select select {
+    font-size: 1rem;
+    padding: 0.25em 1.75em 0.25em 0.5em;
+    background-color: white;
+    border: var(--border);
+    border-radius: var(--border-radius);
+    width: 100%;
+}
+
+.select select:focus {
+    outline-offset: 3px;
+}
+
+.select {
+    position: relative;
+    --border: 1px solid rgb(0, 0, 0, 0.3);
+    --border-radius: 0.25em;
+}
+
+.arrow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: white;
+    height: 100%;
+    width: 1.75em;
+    pointer-events: none;
+    border: var(--border);
+    border-left: none;
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+
+.arrow::before, .arrow::after {
+    --size: 0.25em;
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 50%;
+    translate: -50% -50%;
+}
+
+.arrow::before {
+    border-left: var(--size) solid transparent;
+    border-right: var(--size) solid transparent;
+    border-bottom: var(--size) solid black;
+    top: 38%;
+}
+
+.arrow::after {
+    border-left: var(--size) solid transparent;
+    border-right: var(--size) solid transparent;
+    border-top: var(--size) solid black;
+    top: 62%;
+}

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { loginUser, fetchUser } from '../../api/api';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUserContext } from '../../hooks/UserContext';
-import Error from '../Error/Error';
-import errorStyles from '../Error/Error.module.css';
+import Error from '../Misc/Error/Error';
+import errorStyles from '../Misc/Error/Error.module.css';
 
 export default function LoginForm() {
     const [formData, setFormData] = useState({

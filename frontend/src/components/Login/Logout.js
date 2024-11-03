@@ -2,7 +2,7 @@ import { useUserContext } from '../../hooks/UserContext';
 import { useEffect } from 'react';
 import { logoutUser } from '../../api/api';
 import { useNavigate } from 'react-router-dom';
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
+import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
 
 export default function Logout() {
     const { removeUser } = useUserContext();

@@ -1,16 +1,17 @@
 import React from 'react';
 import useFetch from '../../hooks/useFetch';
 import { useUserContext } from '../../hooks/UserContext';
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
+import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
+import Error from '../Misc/Error/Error';
 
 export default function ExerciseInfo({ id }) {
     const { user } = useUserContext();
-    const { loading, data: exercise, error }  = useFetch(user && id && `/users/${user?.id}/exercise/${id}`);
+    const { loading, data: exercise, error }  = useFetch(user && id && `/users/${user?.id}/exercises/${id}`);
 
 
     return(
         <div style={{padding: "1rem"}}>
-            {loading && <LoadingSpinner />}
+            {loading ? <LoadingSpinner /> : error ? <Error text="Failed to load data" /> : undefined}
 
             {exercise && !loading && !error && (
                 <>

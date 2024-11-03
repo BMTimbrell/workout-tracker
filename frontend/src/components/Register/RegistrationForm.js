@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { registerUser } from '../../api/api';
-import Error from '../Error/Error';
-import errorStyles from '../Error/Error.module.css';
+import Error from '../Misc/Error/Error';
+import errorStyles from '../Misc/Error/Error.module.css';
 import styles from '../Register/Register.module.css';
 import { Link } from 'react-router-dom';
 
