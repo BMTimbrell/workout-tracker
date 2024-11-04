@@ -1,0 +1,24 @@
+.heading {
+    margin-bottom: 1em;
+    font-size: 1.125rem;
+}
+
+.p {
+    margin-bottom: 1.25em;
+}
+
+.muscle {
+    display: inline;
+}
+
+.muscle:first-child {
+    text-transform: capitalize;
+}
+
+.muscle:not(:last-child)::after {
+    content: ', ';
+}
+
+.muscle:last-child::after {
+    content: '.';
+}

@@ -1,0 +1,32 @@
+.tab-list {
+    display: flex;
+    justify-content: space-around;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+}
+
+.tab-list li {
+    width: 100%;
+}
+
+.tab {
+    background-color: transparent;
+    font-size: 1rem;
+    width: 100%;
+    font-weight: bold;
+    color: #888;
+    border-bottom: 3px solid transparent;
+    padding: 1em;
+}
+
+.tab:hover {
+    background-color: color-mix(in srgb, var(--secondary), transparent 80%);
+}
+
+.tab-active {
+    border-bottom: 3px solid var(--primary);
+    color: var(--primary);
+}
+
+.tab-panel {
+    padding: 1.5rem 1rem 1.25rem;
+}

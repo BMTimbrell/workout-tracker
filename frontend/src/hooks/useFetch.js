@@ -30,7 +30,9 @@ export default function useFetch(endpoint, options = {}, dependencies = [], url=
                     else setError(true);
                 })
                 .catch(e => {
-                    setError(true);
+                    if (!controller.signal.aborted) {
+                        setError(true);
+                    }
                 })
                 .finally(() => setLoading(false));
             
@@ -38,6 +40,7 @@ export default function useFetch(endpoint, options = {}, dependencies = [], url=
                 controller.abort();
             }
         }
+        // eslint-disable-next-line
     }, [url, endpoint, ...dependencies]);
 
     return { loading, data, error, setLoading, setData, setError };

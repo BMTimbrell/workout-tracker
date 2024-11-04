@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
 import Error from '../Misc/Error/Error';
 import Select from '../Misc/Select/Select';
+import Tabs from '../Misc/Tabs/Tabs';
 
 export default function Exercises() {
     const { user } = useUserContext();
@@ -21,7 +22,9 @@ export default function Exercises() {
     const [searchText, setSearchText] = useState('');
     const { data: bodyparts } = useFetch(user && `/users/${user?.id}/exercises/bodyparts`);
     const [bodypart, setBodypart] = useState('');
-    const [modal, setModal] = useState(false);
+    const [infoModal, setInfoModal] = useState(false);
+    const [editModal, setEditModal] = useState(false);
+    const [addModal, setAddModal] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [exerciseId, setExerciseId] = useState(null);
     const navigate = useNavigate();
@@ -37,22 +40,24 @@ export default function Exercises() {
 
     useEffect(() => {
         if (!user) navigate('/login');
-        if (exercises?.authorisationFailed) {
-            navigate('/logout');
-        }
-    }, [exercises, user]);
+    }, [user, navigate]);
 
     useEffect(() => {
         if (searchText || bodypart) {
             setLoading(true);
             const controller = new AbortController();
-            searchExercises(user.id, searchText, bodypart, controller)
+            searchExercises(user?.id, searchText, bodypart, controller)
                 .then(res => {
                     if (res?.message === 'You must be logged in as this user to access this resource') navigate('/logout');
                     else if (res) {
+                        if (res?.authorisationFailed) {
+                            navigate('/logout');
+                        }
                         setExercises(res);
                         setError(false);
-                    } else setError(true);
+                    } else {
+                        setError(true);
+                    }
                 })
                 .catch(e => {
                     setError(true);
@@ -68,6 +73,9 @@ export default function Exercises() {
                 .then(res => {
                     if (res?.message === 'You must be logged in as this user to access this resource') navigate('/logout');
                     else if (res) {
+                        if (res?.authorisationFailed) {
+                            navigate('/logout');
+                        }
                         setExercises(res);
                         setError(false);
                     } else setError(true);
@@ -80,7 +88,7 @@ export default function Exercises() {
                 controller.abort();
             }
         }
-    }, [searchText, bodypart]);
+    }, [searchText, bodypart, navigate, user?.id]);
 
     const handleSelectChange = e => {
         setBodypart(e.target.value);
@@ -91,11 +99,11 @@ export default function Exercises() {
             <h1>Exercises</h1>
 
             <div className={styles["input-container"]}>
-                <button className="button button-primary"><FontAwesomeIcon icon={faPlus} /></button>
+                <button className="button button-primary" onClick={() => setAddModal(true)}><FontAwesomeIcon icon={faPlus} /></button>
 
                 <Select onChange={handleSelectChange}>
                     <option value="">All body parts</option>
-                    {bodyparts && bodyparts.bodyparts.map(el => (
+                    {bodyparts && bodyparts?.bodyparts.map(el => (
                         <option key={el} value={el}>{el}</option>
                     ))}
                 </Select>
@@ -115,14 +123,31 @@ export default function Exercises() {
                 loading ? <LoadingSpinner /> : error ? <Error text="Failed to load data" /> : undefined
             }
 
-            <Modal openModal={modal} closeModal={() => setModal(false)} title={modalTitle}>
-                <ExerciseInfo id={exerciseId} />
+            <Modal openModal={addModal} closeModal={() => setAddModal(false)} title="Add Exercise">
+                
+            </Modal>
+
+            <Modal 
+                openModal={infoModal} 
+                closeModal={() => setInfoModal(false)} 
+                title={modalTitle}
+                footerItems={<button className="button button-tertiary" onClick={() => setInfoModal(false)}>Close</button>}
+            >
+                <Tabs tabNames={["About", "History"]}>
+                    <ExerciseInfo id={exerciseId} />
+                    <p>hi</p>
+                </Tabs>
+            </Modal>
+
+            <Modal openModal={editModal} closeModal={() => setEditModal(false)} title="Edit Exercise">
+                
             </Modal>
 
             {exercises && !error && !loading &&
                 <ExerciseList 
                     exercises={exercises.exercises} 
-                    openModal={() => setModal(true)} 
+                    openInfoModal={() => setInfoModal(true)} 
+                    openEditModal={() => setEditModal(true)} 
                     setModalTitle={setModalTitle} 
                     setExerciseId={setExerciseId}
                 />

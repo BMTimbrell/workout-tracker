@@ -31,10 +31,23 @@
 .exercise-footer {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
-.exercise-footer > p {
+.exercise-footer > span {
     color: rgba(0, 0, 0, 0.7);
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.button-container > * {
+    flex: 1 1 0;
+    min-width: 2.25em;
 }
 
 .input {

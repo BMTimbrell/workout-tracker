@@ -95,11 +95,13 @@ export const getExercises = async (id, controller) => {
         });
         
         if (response.ok) return response.json();
+        else if (response.status === 401) return { authorisationFailed: true };
 
         return null;
     } catch (error) {
-        console.log(error);
-        return null;
+        if (!controller.signal.aborted) {
+            return null;   
+        }
     }
 };
 
@@ -112,13 +114,15 @@ export const searchExercises = async (id, name, bodypart, controller) => {
             credentials: "include",
             signal: controller.signal
         });
-        
+
         if (response.ok) return response.json();
+        else if (response.status === 401) return { authorisationFailed: true };
 
         return null;
     } catch (error) {
-        console.log(error);
-        return null;
+        if (!controller.signal.aborted) {
+            return null;   
+        }
     }
 };
 
@@ -136,7 +140,8 @@ export const getBodyParts = async (id, controller) => {
 
         return null;
     } catch (error) {
-        console.log(error);
-        return null;
+        if (!controller.signal.aborted) {
+            return null;   
+        }
     }
 };
