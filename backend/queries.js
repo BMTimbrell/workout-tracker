@@ -154,21 +154,21 @@ const searchExercises = async (req, res) => {
     try {
         if (bodypart && name) {
             exercises = await pool.query(
-                'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description '
+                'SELECT exercises.id, exercises.user_id, exercises.name, exercises.bodypart, exercises.description '
                 + 'FROM exercises '
                 + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND LOWER(exercises.name) LIKE LOWER($2) AND exercises.bodypart = $3 "
                 + 'ORDER BY exercises.name', [id, "%" + name + "%", bodypart]
             );
         } else if (name) {
             exercises = await pool.query(
-                'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description '
+                'SELECT exercises.id, exercises.user_id, exercises.name, exercises.bodypart, exercises.description '
                 + 'FROM exercises '
                 + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND LOWER(exercises.name) LIKE LOWER($2) "
                 + 'ORDER BY exercises.name', [id, "%" + name + "%"]
             );
         } else if (bodypart) {
             exercises = await pool.query(
-                'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description '
+                'SELECT exercises.id, exercises.user_id, exercises.name, exercises.bodypart, exercises.description '
                 + 'FROM exercises '
                 + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND exercises.bodypart = $2 "
                 + 'ORDER BY exercises.name', [id, bodypart]
