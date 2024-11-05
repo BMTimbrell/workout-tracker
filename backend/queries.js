@@ -40,13 +40,10 @@ const createUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const user = await pool.query('INSERT INTO users (email, name, password) VALUES ($1, $2, $3) RETURNING *', 
+        await pool.query('INSERT INTO users (email, name, password) VALUES ($1, $2, $3) RETURNING *', 
         [email, name, hashedPassword]);
 
-        req.login(user.rows[0], function(error) {
-            if (error) return res.status(500).json({message: error.message}); 
-            return res.status(201).json({message: 'registration successful'});
-        });
+        return res.status(201).json({message: 'registration successful'});
     } catch (error) {
         return res.status(500).json({error});
     }
@@ -111,7 +108,7 @@ const getExercises = async (req, res) => {
 
     try {
         const exercises = await pool.query(
-            'SELECT id, name, bodypart, description '
+            'SELECT id, name, bodypart, description, user_id '
             + 'FROM exercises '
             + 'WHERE exercises.user_id IS NULL OR exercises.user_id = $1 '
             + 'ORDER BY exercises.name', [id]
@@ -131,7 +128,7 @@ const getBodyParts = async (req, res) => {
         const bodyparts = await pool.query(
             'SELECT DISTINCT bodypart '
             + 'FROM exercises '
-            + 'WHERE exercises.user_id IS NULL OR exercises.user_id = $1 '
+            + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND exercises.bodypart <> 'Other'"
             + 'ORDER BY bodypart', [id]
         );
 
@@ -188,7 +185,7 @@ const getExerciseById = async (req, res) => {
 
     try {
         const exercise = await pool.query(
-            'SELECT exercises.id, exercises.name, exercises.bodypart, exercises.description, array_agg(muscles.name) as muscles, array_agg(muscles_exercises.primary_muscle) as primary_muscles '
+            'SELECT exercises.id, exercises.user_id, exercises.name, exercises.bodypart, exercises.description, array_agg(muscles.name) as muscles, array_agg(muscles_exercises.primary_muscle) as primary_muscles '
             + 'FROM exercises '
             + 'INNER JOIN muscles_exercises ON muscles_exercises.exercise_id = exercises.id '
             + 'INNER JOIN muscles ON muscles.id = muscles_exercises.muscle_id '
@@ -228,6 +225,20 @@ const getExerciseById = async (req, res) => {
     }
 };
 
+const addExercise = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const { name, bodypart } = req.body;
+
+    try {
+        await pool.query('INSERT INTO exercises (name, bodypart, user_id) VALUES ($1, $2, $3)', 
+        [name, bodypart, userId]);
+
+        return res.status(201).json({message: 'exercise added'});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
 module.exports = {
     checkUserAuthorised,
     getUserById,
@@ -237,5 +248,6 @@ module.exports = {
     getExercises,
     getBodyParts,
     searchExercises,
-    getExerciseById
+    getExerciseById,
+    addExercise
 };

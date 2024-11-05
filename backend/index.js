@@ -63,6 +63,7 @@ app.get('/logout', (req, res, next) => {
 });
 
 app.get('/users/:id/exercises', db.checkUserAuthorised, db.getExercises);
+app.post('/users/:id/exercises', db.checkUserAuthorised, db.addExercise);
 app.get('/users/:id/exercises/bodyparts', db.checkUserAuthorised, db.getBodyParts);
 app.get('/users/:id/exercises/search', db.checkUserAuthorised, db.searchExercises);
 app.get('/users/:id/exercises/:exerciseId', db.checkUserAuthorised, db.getExerciseById);
