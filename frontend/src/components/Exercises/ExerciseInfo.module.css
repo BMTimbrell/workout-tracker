@@ -8,15 +8,15 @@
 }
 
 .muscle {
-    display: inline;
+    display: inline-block; /* must be block for first letter to work */
 }
 
-.muscle:first-child {
-    text-transform: capitalize;
+.muscle:first-child::first-letter {
+    text-transform: uppercase;
 }
 
 .muscle:not(:last-child)::after {
-    content: ', ';
+    content: ',\00a0';
 }
 
 .muscle:last-child::after {

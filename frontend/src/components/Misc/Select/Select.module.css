@@ -1,6 +1,6 @@
 .select select {
     font-size: 1rem;
-    padding: 0.25em 1.75em 0.25em 0.5em;
+    padding: 0.5em 1.75em 0.5em 0.75em;
     background-color: white;
     border: var(--border);
     border-radius: var(--border-radius);
@@ -13,7 +13,7 @@
 
 .select {
     position: relative;
-    --border: 1px solid rgb(0, 0, 0, 0.3);
+    --border: var(--light-border);
     --border-radius: 0.25em;
 }
 
@@ -53,4 +53,13 @@
     border-right: var(--size) solid transparent;
     border-top: var(--size) solid black;
     top: 62%;
+}
+
+.select + label {
+    translate: -0.1875rem -0.5rem;
+    color: initial;
+    z-index: 9999;
+    height: auto;
+    background-color: inherit;
+    padding: 0 0.25rem;
 }

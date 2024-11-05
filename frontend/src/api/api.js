@@ -145,3 +145,28 @@ export const getBodyParts = async (id, controller) => {
         }
     }
 };
+
+export const addExercise = async (userId, name, bodypart) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${userId}/exercises`, {
+            method: 'POST',
+            credentials: "include",
+                body: JSON.stringify({
+                    name,
+                    bodypart
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                }
+        });
+
+        if (response.ok) return response.json();
+        else if (response.status === 401) return { authorisationFailed: true };
+        
+        return null;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};

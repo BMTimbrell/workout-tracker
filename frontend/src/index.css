@@ -5,6 +5,7 @@
   --danger: #cc0033;
   --success: #4BB543;
   --warning: #ffcc00;
+  --light-border: 1px solid#bbbbbb;
 }
 
 *, *::before, *::after {
@@ -27,6 +28,9 @@ button {
   font-family: inherit;
   border: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 body {
@@ -136,7 +140,7 @@ input {
   padding: var(--input-padding);
   transition: 0.3s ease;
   background-color: inherit;
-  border: 1px solid #888;
+  border: var(--light-border);
   border-radius: 0.25rem;
 }
 

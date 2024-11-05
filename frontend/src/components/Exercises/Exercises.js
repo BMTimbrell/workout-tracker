@@ -1,6 +1,8 @@
 import ExerciseList from './ExerciseList';
 import ExerciseInfo from './ExerciseInfo';
+import AddExercise from './AddExercise';
 import Modal from '../Misc/Modal/Modal';
+import ModalFooter from '../Misc/Modal/ModalFooter';
 import { useEffect, useState } from 'react';
 import { getExercises, searchExercises } from '../../api/api';
 import { useUserContext } from '../../hooks/UserContext';
@@ -27,6 +29,7 @@ export default function Exercises() {
     const [addModal, setAddModal] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [exerciseId, setExerciseId] = useState(null);
+    const [customExercise, setCustomExercise] = useState(false);
     const navigate = useNavigate();
 
     const handleSearchChange = e => {
@@ -38,11 +41,7 @@ export default function Exercises() {
         setSearchText("");
     };
 
-    useEffect(() => {
-        if (!user) navigate('/login');
-    }, [user, navigate]);
-
-    useEffect(() => {
+    const updateExercises = () => {
         if (searchText || bodypart) {
             setLoading(true);
             const controller = new AbortController();
@@ -88,6 +87,14 @@ export default function Exercises() {
                 controller.abort();
             }
         }
+    };
+
+    useEffect(() => {
+        if (!user) navigate('/login');
+    }, [user, navigate]);
+
+    useEffect(() => {
+        updateExercises();
     }, [searchText, bodypart, navigate, user?.id]);
 
     const handleSelectChange = e => {
@@ -106,6 +113,7 @@ export default function Exercises() {
                     {bodyparts && bodyparts?.bodyparts.map(el => (
                         <option key={el} value={el}>{el}</option>
                     ))}
+                    <option value="Other">Other</option>
                 </Select>
 
                 <div className={styles.search}>
@@ -123,20 +131,30 @@ export default function Exercises() {
                 loading ? <LoadingSpinner /> : error ? <Error text="Failed to load data" /> : undefined
             }
 
-            <Modal openModal={addModal} closeModal={() => setAddModal(false)} title="Add Exercise">
-                
+            <Modal 
+                openModal={addModal} 
+                closeModal={() => setAddModal(false)} 
+                title="Add Exercise" 
+            >
+                <AddExercise 
+                    closeModal={() => setAddModal(false)} 
+                    bodyparts={bodyparts} 
+                    updateExercises={updateExercises} 
+                />
             </Modal>
 
             <Modal 
                 openModal={infoModal} 
                 closeModal={() => setInfoModal(false)} 
                 title={modalTitle}
-                footerItems={<button className="button button-tertiary" onClick={() => setInfoModal(false)}>Close</button>}
             >
-                <Tabs tabNames={["About", "History"]}>
-                    <ExerciseInfo id={exerciseId} />
+                <Tabs tabNames={!customExercise ? ["About", "History", "Graph"] : ["History", "Graph"]}>
+                    {!customExercise && <ExerciseInfo id={exerciseId} />}
                     <p>hi</p>
                 </Tabs>
+                <ModalFooter>
+                    <button className="button button-tertiary" onClick={() => setInfoModal(false)}>Close</button>
+                </ModalFooter>
             </Modal>
 
             <Modal openModal={editModal} closeModal={() => setEditModal(false)} title="Edit Exercise">
@@ -150,6 +168,7 @@ export default function Exercises() {
                     openEditModal={() => setEditModal(true)} 
                     setModalTitle={setModalTitle} 
                     setExerciseId={setExerciseId}
+                    isCustom={setCustomExercise}
                 />
             }
         </>

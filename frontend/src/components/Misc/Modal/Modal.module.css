@@ -42,7 +42,7 @@
 }
 
 .modal-footer {
-  border-top: 1px solid rgba(0, 0, 0, 0.3);
+  border-top: var(--light-border);
   padding: 1rem;
   display: flex;
   justify-content: flex-end;
@@ -51,6 +51,11 @@
 
 .modal-footer-multiple-items {
   justify-content: space-between;
+}
+
+.modal form {
+  border: none;
+  box-shadow: none;
 }
 
 @keyframes animation-fade {

@@ -1,7 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import styles from './Modal.module.css';
 
-export default function Modal({ openModal, closeModal, children, title, footerItems }) {
+export default function Modal({ openModal, closeModal, children, title }) {
     const ref = useRef();
 
     useEffect(() => {
@@ -22,13 +22,6 @@ export default function Modal({ openModal, closeModal, children, title, footerIt
                 </div>
 
                 {children}
-            </div>
-            <div className={footerItems?.length > 1 ? `${styles["modal-footer-multiple-items"]} ${styles["modal-footer"]}` : styles["modal-footer"]}>
-                {footerItems?.length ? footerItems?.map((item, index) => (
-                    <React.Fragment key={index}>
-                        {item}
-                    </React.Fragment>
-                )) : footerItems}
             </div>
         </dialog>
     );

@@ -2,7 +2,7 @@ import { faInfo, faPencil } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './Exercise.module.css';
 
-export default function Exercise({ id, name, bodypart, description, openInfoModal, openEditModal, setExerciseId, setModalTitle, userId }) {
+export default function Exercise({ id, name, bodypart, description, openInfoModal, openEditModal, setExerciseId, setModalTitle, userId, isCustom }) {
 
     return (
         <div className={styles.exercise}>
@@ -17,6 +17,7 @@ export default function Exercise({ id, name, bodypart, description, openInfoModa
                             openInfoModal();
                             setExerciseId(id); 
                             setModalTitle(name);
+                            isCustom(userId && true);
                         }} 
                         className="button button-secondary"
                     >
@@ -27,7 +28,7 @@ export default function Exercise({ id, name, bodypart, description, openInfoModa
                         <button 
                             onClick={() => {
                                 openEditModal();
-                                setExerciseId(id); 
+                                setExerciseId(id);
                             }} 
                             className="button button-secondary"
                         >

@@ -1,14 +1,14 @@
 import Exercise from './Exercise';
 import styles from './Exercise.module.css';
 
-export default function ExerciseList({ exercises, openInfoModal, openEditModal, setExerciseId, setModalTitle }) {
+export default function ExerciseList({ exercises, openInfoModal, openEditModal, setExerciseId, setModalTitle, isCustom }) {
     return (
         <div className={styles['exercise-container']}>
             {exercises?.map(exercise => (
                 <Exercise 
                     key={exercise.id}
                     id={exercise.id}
-                    userId={exercise.userId}
+                    userId={exercise["user_id"]}
                     name={exercise.name}
                     bodypart={exercise.bodypart}
                     description={exercise.description}
@@ -16,6 +16,7 @@ export default function ExerciseList({ exercises, openInfoModal, openEditModal, 
                     openEditModal={openEditModal}
                     setExerciseId={setExerciseId}
                     setModalTitle={setModalTitle}
+                    isCustom={isCustom}
                 />
             ))}
         </div>

@@ -3,6 +3,7 @@ import styles from './Tabs.module.css';
 
 export default function Tabs({ children, tabNames }) {
     const [tab, setTab] = useState(0);
+    children = children.filter(Boolean);
 
     return (
         <div>
