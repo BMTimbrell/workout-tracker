@@ -79,6 +79,7 @@ input {
   border-radius: 0.25rem;
   padding: 0.375em 0.75em;
   font-size: 0.875rem;
+  line-height: 1.25em;
   border: 1px solid transparent;
 }
 
@@ -101,7 +102,6 @@ input {
 }
 
 .button-tertiary {
-  box-sizing: border-box;
   background-color: var(--tertiary);
   color: rgb(65, 65, 65);
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -109,6 +109,15 @@ input {
 
 .button-tertiary:hover {
   background-color: #c0c0c0; 
+}
+
+.button-danger {
+  background-color: var(--danger);
+  color: #fce4e4;
+}
+
+.button-danger:hover {
+  background-color: #b9012f;
 }
 
 .form {

@@ -1,9 +1,10 @@
 import ExerciseList from './ExerciseList';
 import ExerciseInfo from './ExerciseInfo';
 import AddExercise from './AddExercise';
+import EditExercise from './EditExercise';
 import Modal from '../Misc/Modal/Modal';
 import ModalFooter from '../Misc/Modal/ModalFooter';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getExercises, searchExercises } from '../../api/api';
 import { useUserContext } from '../../hooks/UserContext';
 import useFetch from '../../hooks/useFetch';
@@ -28,7 +29,11 @@ export default function Exercises() {
     const [editModal, setEditModal] = useState(false);
     const [addModal, setAddModal] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
-    const [exerciseId, setExerciseId] = useState(null);
+    const [selectedExercise, setSelectedExercise] = useState({
+        id: 0,
+        name: "",
+        bodypart: ""
+    });
     const [customExercise, setCustomExercise] = useState(false);
     const navigate = useNavigate();
 
@@ -41,7 +46,7 @@ export default function Exercises() {
         setSearchText("");
     };
 
-    const updateExercises = () => {
+    const updateExercises = useCallback(() => {
         if (searchText || bodypart) {
             setLoading(true);
             const controller = new AbortController();
@@ -87,7 +92,7 @@ export default function Exercises() {
                 controller.abort();
             }
         }
-    };
+    }, [searchText, bodypart, navigate, user?.id]);
 
     useEffect(() => {
         if (!user) navigate('/login');
@@ -95,7 +100,7 @@ export default function Exercises() {
 
     useEffect(() => {
         updateExercises();
-    }, [searchText, bodypart, navigate, user?.id]);
+    }, [updateExercises]);
 
     const handleSelectChange = e => {
         setBodypart(e.target.value);
@@ -149,7 +154,7 @@ export default function Exercises() {
                 title={modalTitle}
             >
                 <Tabs tabNames={!customExercise ? ["About", "History", "Graph"] : ["History", "Graph"]}>
-                    {!customExercise && <ExerciseInfo id={exerciseId} />}
+                    {!customExercise && <ExerciseInfo id={selectedExercise.id} />}
                     <p>hi</p>
                 </Tabs>
                 <ModalFooter>
@@ -158,7 +163,13 @@ export default function Exercises() {
             </Modal>
 
             <Modal openModal={editModal} closeModal={() => setEditModal(false)} title="Edit Exercise">
-                
+                <EditExercise
+                    formData={selectedExercise}
+                    setFormData={setSelectedExercise}
+                    closeModal={() => setEditModal(false)} 
+                    bodyparts={bodyparts} 
+                    updateExercises={updateExercises} 
+                />
             </Modal>
 
             {exercises && !error && !loading &&
@@ -167,7 +178,9 @@ export default function Exercises() {
                     openInfoModal={() => setInfoModal(true)} 
                     openEditModal={() => setEditModal(true)} 
                     setModalTitle={setModalTitle} 
-                    setExerciseId={setExerciseId}
+                    setExerciseId={id => setSelectedExercise(prev => ({ ...prev, id }))}
+                    setExerciseName={name => setSelectedExercise(prev => ({ ...prev, name }))}
+                    setExerciseBodypart={bodypart => setSelectedExercise(prev => ({ ...prev, bodypart }))}
                     isCustom={setCustomExercise}
                 />
             }

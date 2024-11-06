@@ -3,7 +3,7 @@ import styles from './Exercise.module.css';
 import Select from '../Misc/Select/Select';
 import Error from '../Misc/Error/Error';
 import errorStyles from '../Misc/Error/Error';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { addExercise } from '../../api/api';
 import { useUserContext } from '../../hooks/UserContext';
 
@@ -42,7 +42,6 @@ export default function AddExercise({ closeModal, bodyparts, updateExercises }) 
                 name: "",
                 bodypart: "Other"
             });
-            e.target.reset();
             updateExercises();
             closeModal();
         } else {
@@ -51,6 +50,14 @@ export default function AddExercise({ closeModal, bodyparts, updateExercises }) 
 
         setSubmitting(false);
     };
+
+    useEffect(() => {
+        setFormData({
+            name: "",
+            bodypart: "Other"
+        });
+        setError(false);
+    }, [closeModal]);
 
     return (
         <>
@@ -62,14 +69,15 @@ export default function AddExercise({ closeModal, bodyparts, updateExercises }) 
                             type="text"
                             onChange={handleChange} 
                             name="name" 
-                            placeholder=" " 
+                            placeholder=" "
+                            value={formData.name} 
                             required 
                         />
                         <label htmlFor="name">Name</label>
                     </div>
 
                     <div className="floating-input">
-                        <Select id="bodypart" onChange={handleChange}>
+                        <Select value={formData.bodypart} id="bodypart" onChange={handleChange}>
                             {bodyparts && bodyparts?.bodyparts.map(el => (
                                 <option key={el} value={el}>{el}</option>
                             ))}

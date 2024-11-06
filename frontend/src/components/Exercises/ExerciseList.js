@@ -1,7 +1,7 @@
 import Exercise from './Exercise';
 import styles from './Exercise.module.css';
 
-export default function ExerciseList({ exercises, openInfoModal, openEditModal, setExerciseId, setModalTitle, isCustom }) {
+export default function ExerciseList({ exercises, openInfoModal, openEditModal, setExerciseId, setExerciseName, setExerciseBodypart, setModalTitle, isCustom }) {
     return (
         <div className={styles['exercise-container']}>
             {exercises?.map(exercise => (
@@ -15,6 +15,8 @@ export default function ExerciseList({ exercises, openInfoModal, openEditModal, 
                     openInfoModal={openInfoModal}
                     openEditModal={openEditModal}
                     setExerciseId={setExerciseId}
+                    setExerciseName={setExerciseName}
+                    setExerciseBodypart={setExerciseBodypart}
                     setModalTitle={setModalTitle}
                     isCustom={isCustom}
                 />

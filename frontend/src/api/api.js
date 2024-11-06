@@ -151,18 +151,61 @@ export const addExercise = async (userId, name, bodypart) => {
         const response = await fetch(`${baseUrl}/users/${userId}/exercises`, {
             method: 'POST',
             credentials: "include",
-                body: JSON.stringify({
-                    name,
-                    bodypart
-                }),
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                }
+            body: JSON.stringify({
+                name,
+                bodypart
+            }),
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
         });
 
         if (response.ok) return response.json();
-        else if (response.status === 401) return { authorisationFailed: true };
+        
+        return null;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
+
+export const editExercise = async (userId, exerciseId, name, bodypart) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${userId}/exercises/${exerciseId}`, {
+            method: 'PUT',
+            credentials: "include",
+            body: JSON.stringify({
+                name,
+                bodypart
+            }),
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+
+        if (response.ok) return response.json();
+        
+        return null;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
+
+export const deleteExercise = async (userId, exerciseId) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${userId}/exercises/${exerciseId}`, {
+            method: 'DELETE',
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+
+        if (response.ok) return response.json();
         
         return null;
     } catch (error) {
