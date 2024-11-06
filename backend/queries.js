@@ -111,7 +111,7 @@ const getExercises = async (req, res) => {
             'SELECT id, name, bodypart, description, user_id '
             + 'FROM exercises '
             + 'WHERE exercises.user_id IS NULL OR exercises.user_id = $1 '
-            + 'ORDER BY exercises.name', [id]
+            + 'ORDER BY LOWER(exercises.name)', [id]
         );
 
         return res.status(200).json({exercises: exercises.rows});
@@ -154,21 +154,21 @@ const searchExercises = async (req, res) => {
                 'SELECT exercises.id, exercises.user_id, exercises.name, exercises.bodypart, exercises.description '
                 + 'FROM exercises '
                 + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND LOWER(exercises.name) LIKE LOWER($2) AND exercises.bodypart = $3 "
-                + 'ORDER BY exercises.name', [id, "%" + name + "%", bodypart]
+                + 'ORDER BY LOWER(exercises.name)', [id, "%" + name + "%", bodypart]
             );
         } else if (name) {
             exercises = await pool.query(
                 'SELECT exercises.id, exercises.user_id, exercises.name, exercises.bodypart, exercises.description '
                 + 'FROM exercises '
                 + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND LOWER(exercises.name) LIKE LOWER($2) "
-                + 'ORDER BY exercises.name', [id, "%" + name + "%"]
+                + 'ORDER BY LOWER(exercises.name)', [id, "%" + name + "%"]
             );
         } else if (bodypart) {
             exercises = await pool.query(
                 'SELECT exercises.id, exercises.user_id, exercises.name, exercises.bodypart, exercises.description '
                 + 'FROM exercises '
                 + "WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND exercises.bodypart = $2 "
-                + 'ORDER BY exercises.name', [id, bodypart]
+                + 'ORDER BY LOWER(exercises.name)', [id, bodypart]
             );
         }
 
@@ -239,6 +239,35 @@ const addExercise = async (req, res) => {
     }
 };
 
+const updateExercise = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const exerciseId = parseInt(req.params.exerciseId);
+    const { name, bodypart } = req.body;
+
+    try {
+        await pool.query('UPDATE exercises SET name = $1, bodypart = $2 WHERE user_id = $3 AND id = $4', 
+        [name, bodypart, userId, exerciseId]);
+
+        return res.status(200).json({message: 'exercise updated'});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
+const deleteExercise = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const exerciseId = parseInt(req.params.exerciseId);
+
+    try {
+        await pool.query('DELETE FROM exercises WHERE user_id = $1 AND id = $2', 
+        [userId, exerciseId]);
+
+        return res.status(200).json({message: 'exercise deleted'});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
 module.exports = {
     checkUserAuthorised,
     getUserById,
@@ -249,5 +278,7 @@ module.exports = {
     getBodyParts,
     searchExercises,
     getExerciseById,
-    addExercise
+    addExercise,
+    updateExercise,
+    deleteExercise
 };
