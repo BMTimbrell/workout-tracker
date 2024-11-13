@@ -1,7 +1,20 @@
 import Exercise from './Exercise';
-import styles from './Exercise.module.css';
+import styles from './Exercises.module.css';
 
-export default function ExerciseList({ exercises, openInfoModal, openEditModal, setExerciseId, setExerciseName, setExerciseBodypart, setModalTitle, isCustom }) {
+export default function ExerciseList({ 
+    exercises, 
+    openInfoModal, 
+    openEditModal, 
+    setExerciseId, 
+    setExerciseName, 
+    setExerciseBodypart, 
+    setModalTitle, 
+    isCustom, 
+    isModal,
+    addToForm,
+    exercisesAdded,
+    removeFromForm
+}) {
     return (
         <div className={styles['exercise-container']}>
             {exercises?.map(exercise => (
@@ -19,6 +32,10 @@ export default function ExerciseList({ exercises, openInfoModal, openEditModal, 
                     setExerciseBodypart={setExerciseBodypart}
                     setModalTitle={setModalTitle}
                     isCustom={isCustom}
+                    isModal={isModal}
+                    addToForm={addToForm}
+                    exercisesAdded={exercisesAdded}
+                    removeFromForm={removeFromForm}
                 />
             ))}
         </div>

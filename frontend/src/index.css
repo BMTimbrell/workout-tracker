@@ -6,6 +6,7 @@
   --success: #4BB543;
   --warning: #ffcc00;
   --light-border: 1px solid#bbbbbb;
+  --link-color: rgb(21, 56, 255);
 }
 
 *, *::before, *::after {
@@ -60,10 +61,21 @@ input {
 }
 
 .link {
-  color: rgb(21, 56, 255);
+  color: var(--link-color);
 }
 
 .link:hover {
+  text-decoration: underline;
+}
+
+.link-button {
+  color: var(--link-color);
+  display: inline;
+  font-size: inherit;
+  background: transparent;
+}
+
+.link-button:hover {
   text-decoration: underline;
 }
 
@@ -73,6 +85,7 @@ input {
 
 .button:disabled {
   opacity: 0.5;
+  pointer-events: none;
 }
 
 .button {
@@ -81,6 +94,10 @@ input {
   font-size: 0.875rem;
   line-height: 1.25em;
   border: 1px solid transparent;
+}
+
+.button > svg:has(+ span)  {
+  margin-right: 0.375em;
 }
 
 .button-primary {
@@ -109,6 +126,11 @@ input {
 
 .button-tertiary:hover {
   background-color: #c0c0c0; 
+}
+
+.button-success {
+  background-color: var(--success);
+  color: white;
 }
 
 .button-danger {

@@ -43,5 +43,5 @@ export default function useFetch(endpoint, options = {}, dependencies = [], url=
         // eslint-disable-next-line
     }, [url, endpoint, ...dependencies]);
 
-    return { loading, data, error, setLoading, setData, setError };
+    return [data, loading, error];
 }

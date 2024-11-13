@@ -1,0 +1,23 @@
+.container {
+    position: relative;
+}
+
+.dropdown {
+    position: absolute;
+    left: -1.25rem;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(19, 22, 26);
+    border-radius: 0.25rem;
+}
+
+.dropdown button {
+    background-color: inherit;
+    color: white;
+    display: flex;
+    font-size: 0.75rem;
+}
+
+svg {
+    pointer-events: none;
+}

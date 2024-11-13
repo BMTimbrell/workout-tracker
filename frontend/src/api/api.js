@@ -213,3 +213,48 @@ export const deleteExercise = async (userId, exerciseId) => {
         return null;
     }
 };
+
+export const getRoutines = async (id, controller) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${id}/routines`, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            signal: controller.signal
+        });
+        
+        if (response.ok) return response.json();
+        else if (response.status === 401) return { authorisationFailed: true };
+
+        return null;
+    } catch (error) {
+        if (!controller.signal.aborted) {
+            return null;   
+        } else {
+            return { abortError: true };
+        }
+    }
+};
+
+export const addRoutine = async (id, name, exercises) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${id}/routines`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name,
+                exercises
+            }),
+            credentials: "include"
+        });
+        
+        if (response.ok) return response.json();
+
+        return null;
+    } catch (error) {
+        return null;
+    }
+};

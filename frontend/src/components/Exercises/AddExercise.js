@@ -1,8 +1,8 @@
 import ModalFooter from '../Misc/Modal/ModalFooter';
-import styles from './Exercise.module.css';
 import Select from '../Misc/Select/Select';
 import Error from '../Misc/Error/Error';
 import errorStyles from '../Misc/Error/Error';
+import modalStyles from '../Misc/Modal/Modal.module.css';
 import { useState, useEffect } from 'react';
 import { addExercise } from '../../api/api';
 import { useUserContext } from '../../hooks/UserContext';
@@ -92,13 +92,13 @@ export default function AddExercise({ closeModal, bodyparts, updateExercises }) 
             </form>
 
             <ModalFooter>
-                <div className={styles["button-container"]}>
+                <div className={modalStyles["button-container"]}>
                     <button onClick={closeModal} className="button button-tertiary">Cancel</button>
                     <button 
                         type="submit" 
                         className="button button-primary" 
                         form="addExerciseForm"
-                        disabled={submitting && true}
+                        disabled={(submitting && true) || (!formData.name && true)}
                     >
                         {!submitting ? 'Add' : 'Adding...'}
                     </button>

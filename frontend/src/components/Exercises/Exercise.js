@@ -1,6 +1,6 @@
-import { faInfo, faPencil } from '@fortawesome/free-solid-svg-icons';
+import { faInfo, faPencil, faPlus, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styles from './Exercise.module.css';
+import styles from './Exercises.module.css';
 
 export default function Exercise({ 
     id, 
@@ -14,7 +14,12 @@ export default function Exercise({
     setExerciseBodypart, 
     setModalTitle, 
     userId, 
-    isCustom 
+    isCustom ,
+    isModal,
+    addToModal,
+    addToForm,
+    exercisesAdded,
+    removeFromForm
 }) {
 
     return (
@@ -25,6 +30,24 @@ export default function Exercise({
                 <span>{bodypart}</span>
 
                 <div className={styles["button-container"]}>
+                    {isModal && (
+                        <button 
+                            onClick={() => {
+                                if (exercisesAdded.find(e => e === id)) {
+                                    removeFromForm(id);
+                                } else {
+                                    addToForm([id, [[0, 0]]])
+                                }
+                            }} 
+                            className={`button ${!exercisesAdded.find(e => e === id) ? "button-secondary" : "button-success"}`}
+                        >
+                            {!exercisesAdded.find(e => e === id) ? 
+                                <FontAwesomeIcon icon={faPlus} /> :
+                                <FontAwesomeIcon icon={faCheck} />
+                            }
+                        </button>
+                    )}
+
                     <button 
                         onClick={() => {
                             openInfoModal();
@@ -44,7 +67,6 @@ export default function Exercise({
                                 setExerciseId(id);
                                 setExerciseName(name);
                                 setExerciseBodypart(bodypart);
-                                isCustom(true);
                             }} 
                             className="button button-secondary"
                         >

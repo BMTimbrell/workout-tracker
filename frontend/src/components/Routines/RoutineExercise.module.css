@@ -1,0 +1,52 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header h3 {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.button-container {
+    display: flex;
+    column-gap: 0.5rem;
+}
+
+.exercise {
+    margin-block: 1rem;
+}
+
+.sets {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 1fr;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 1rem;
+}
+
+.sets > * {
+    min-width: 0;
+}
+
+.sets-heading {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.sets-heading:not(:first-child) {
+    justify-self: center;
+}
+
+.sets > button:last-child {
+    grid-column: 1 / 5;
+}
+
+.sets input[type="number"] {
+    border: var(--light-border);
+    border-radius: 0.25em;
+    padding: 0.25em 0.5em;
+    max-width: 100px;
+    justify-self: center;
+}

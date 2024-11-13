@@ -1,26 +1,26 @@
 import { useUserContext } from '../../hooks/UserContext';
-import useFetch from '../../hooks/useFetch';
-import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import Routines from '../Routines/Routines';
+import styles from './Home.module.css';
 
 export default function Home() {
     const { user } = useUserContext();
-    const navigate = useNavigate();
-    const { data: userData } = useFetch(user && `/users/${user?.id}`);
 
-    useEffect(() => {
-        if (userData?.authorisationFailed) {
-            navigate('/logout');
-        }
-    }, [userData]);
+
+    if (!user) return (
+        <>
+            <h1>Start Workout</h1>
+
+            <p className={styles.about}>
+                This is an app for tracking workouts. You can create a workout template from a list of available, or user-made, exercises. <Link className="link" to="/login">Log in</Link> to use this app.
+            </p>
+        </>
+    );
 
     return (
         <>
             <h1>Start Workout</h1>
-
-            {!user && (
-                <p><Link to="/login">Log in</Link> to use this app.</p>
-            )}
+            <Routines />
         </>
     );
 }

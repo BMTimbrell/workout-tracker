@@ -9,7 +9,7 @@ import { getExercises, searchExercises } from '../../api/api';
 import { useUserContext } from '../../hooks/UserContext';
 import useFetch from '../../hooks/useFetch';
 import { useNavigate } from 'react-router-dom';
-import styles from './Exercise.module.css';
+import styles from './Exercises.module.css';
 import { faCircleXmark, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
@@ -17,13 +17,13 @@ import Error from '../Misc/Error/Error';
 import Select from '../Misc/Select/Select';
 import Tabs from '../Misc/Tabs/Tabs';
 
-export default function Exercises() {
+export default function Exercises({ isModal = false, addToForm, exercisesAdded, removeFromForm }) {
     const { user } = useUserContext();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [exercises, setExercises] = useState(null);
     const [searchText, setSearchText] = useState('');
-    const { data: bodyparts } = useFetch(user && `/users/${user?.id}/exercises/bodyparts`);
+    const [bodyparts] = useFetch(user && `/users/${user?.id}/exercises/bodyparts`);
     const [bodypart, setBodypart] = useState('');
     const [infoModal, setInfoModal] = useState(false);
     const [editModal, setEditModal] = useState(false);
@@ -57,7 +57,7 @@ export default function Exercises() {
                         if (res?.authorisationFailed) {
                             navigate('/logout');
                         }
-                        setExercises(res);
+                        setExercises(res.exercises);
                         setError(false);
                     } else {
                         setError(true);
@@ -80,7 +80,7 @@ export default function Exercises() {
                         if (res?.authorisationFailed) {
                             navigate('/logout');
                         }
-                        setExercises(res);
+                        setExercises(res.exercises);
                         setError(false);
                     } else setError(true);
                 })
@@ -108,7 +108,7 @@ export default function Exercises() {
 
     return (
         <>
-            <h1>Exercises</h1>
+            {!isModal && <h1>Exercises</h1>}
 
             <div className={styles["input-container"]}>
                 <button className="button button-primary" onClick={() => setAddModal(true)}><FontAwesomeIcon icon={faPlus} /></button>
@@ -174,7 +174,7 @@ export default function Exercises() {
 
             {exercises && !error && !loading &&
                 <ExerciseList 
-                    exercises={exercises.exercises} 
+                    exercises={exercises} 
                     openInfoModal={() => setInfoModal(true)} 
                     openEditModal={() => setEditModal(true)} 
                     setModalTitle={setModalTitle} 
@@ -182,6 +182,10 @@ export default function Exercises() {
                     setExerciseName={name => setSelectedExercise(prev => ({ ...prev, name }))}
                     setExerciseBodypart={bodypart => setSelectedExercise(prev => ({ ...prev, bodypart }))}
                     isCustom={setCustomExercise}
+                    isModal={isModal}
+                    addToForm={addToForm}
+                    exercisesAdded={exercisesAdded}
+                    removeFromForm={removeFromForm}
                 />
             }
         </>

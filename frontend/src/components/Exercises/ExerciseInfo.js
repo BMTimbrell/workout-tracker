@@ -6,7 +6,7 @@ import styles from './ExerciseInfo.module.css';
 
 export default function ExerciseInfo({ id }) {
     const { user } = useUserContext();
-    const { loading, data: exercise, error }  = useFetch(user && id && `/users/${user?.id}/exercises/${id}`);
+    const [exercise, loading, error]  = useFetch(user && id && `/users/${user?.id}/exercises/${id}`);
 
     return(
         <div>

@@ -1,6 +1,6 @@
 import ModalFooter from '../Misc/Modal/ModalFooter';
 import Modal from '../Misc/Modal/Modal';
-import styles from './Exercise.module.css';
+import styles from './Exercises.module.css';
 import Select from '../Misc/Select/Select';
 import Error from '../Misc/Error/Error';
 import errorStyles from '../Misc/Error/Error.module.css';
@@ -112,8 +112,8 @@ export default function EditExercise({ formData, setFormData, closeModal, bodypa
                     onClick={() => setDeleteModal(true)}
                     disabled={submitting && true}
                 >
-                    <FontAwesomeIcon style={{marginRight: "0.4rem"}} icon={faTrashCan} />
-                    Delete
+                    <FontAwesomeIcon icon={faTrashCan} />
+                    <span>Delete</span>
                 </button>
                 <div className={styles["button-container"]}>
                     <button onClick={closeModal} className="button button-tertiary">Cancel</button>
