@@ -190,8 +190,7 @@ const getExerciseById = async (req, res) => {
             + 'INNER JOIN muscles_exercises ON muscles_exercises.exercise_id = exercises.id '
             + 'INNER JOIN muscles ON muscles.id = muscles_exercises.muscle_id '
             + 'WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND exercises.id = $2 '
-            + 'GROUP BY exercises.id '
-            + 'ORDER BY exercises.name', [userId, exerciseId]
+            + 'GROUP BY exercises.id ', [userId, exerciseId]
         );
 
         const muscles = exercise.rows[0].muscles;
@@ -217,6 +216,24 @@ const getExerciseById = async (req, res) => {
         delete exercise.rows[0].muscles;
         delete exercise.rows[0].primary_muscles;
         exercise.rows[0].muscles = newMuscles;
+
+        return res.status(200).json(exercise.rows[0]);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
+const getExerciseNameById = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const exerciseId = parseInt(req.params.exerciseId);
+
+    try {
+        const exercise = await pool.query(
+            'SELECT exercises.id, exercises.name '
+            + 'FROM exercises '
+            + 'WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND exercises.id = $2 ', [userId, exerciseId]
+        );
 
         return res.status(200).json(exercise.rows[0]);
     } catch (error) {
@@ -268,6 +285,78 @@ const deleteExercise = async (req, res) => {
     }
 };
 
+const getRoutines = async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        const routines = await pool.query(
+            'WITH exercise_list AS ('
+                +'SELECT routines_exercises.routine_id, exercises.id, exercises.name, array_agg(sets) AS sets '
+                +'FROM routines_exercises '
+                +'JOIN exercises ON routines_exercises.exercise_id = exercises.id '
+                +'JOIN ('
+                +    'SELECT routine_sets.id, routine_sets.weight, routine_sets.reps '
+                +    'FROM routine_sets ORDER BY routine_sets.id'
+                +  ') sets ON sets.id = routines_exercises.set_id '
+                +'GROUP BY routines_exercises.exercise_order, routines_exercises.routine_id, exercises.id '
+                +'ORDER BY routines_exercises.exercise_order'
+              +')'
+              +'SELECT routines.id, routines.name, json_agg(exercise_list) AS exercises '
+              +'FROM routines '
+              +'LEFT JOIN exercise_list ON exercise_list.routine_id = routines.id '
+              +'WHERE routines.user_id = $1 '
+              +'GROUP BY routines.id', [id]
+        );
+
+        return res.status(200).json({routines: routines.rows});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
+const addRoutine = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const { name, exercises } = req.body;
+
+    try {
+        const addRoutine = async () => {
+            try {
+                const result = await pool.query('INSERT INTO routines (user_id, name) VALUES ($1, $2) RETURNING id', [userId, name]);
+                return result.rows[0].id;
+            } catch (error) {
+                return res.status(500).json({error});
+            }
+        };
+        const routineId = await addRoutine();
+        
+        if (routineId) {
+            exercises.forEach((exercise, index) => {
+                exercise[1].forEach(async set => {
+                    try {
+                        const result = await pool.query('INSERT INTO routine_sets (weight, reps) VALUES ($1, $2) RETURNING id', 
+                            [!isNaN(set[0]) ? Number(set[0]) : null, !isNaN(set[1]) ? Number(set[1]) : null]);
+                        const setId = result.rows[0].id;
+
+                        await pool.query('INSERT INTO routines_exercises (routine_id, exercise_id, exercise_order, set_id) VALUES ($1, $2, $3, $4)', 
+                        [routineId, Number(exercise[0]), index, setId]);
+                    } catch (error) {
+                        console.log(error);
+                        return res.status(500).json({error});
+                    }
+                });
+            });
+        }
+
+        return res.status(201).json({message: 'routine added'});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
+
+
 module.exports = {
     checkUserAuthorised,
     getUserById,
@@ -278,7 +367,10 @@ module.exports = {
     getBodyParts,
     searchExercises,
     getExerciseById,
+    getExerciseNameById,
     addExercise,
     updateExercise,
-    deleteExercise
+    deleteExercise,
+    getRoutines,
+    addRoutine
 };

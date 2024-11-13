@@ -70,3 +70,8 @@ app.get('/users/:id/exercises/search', db.checkUserAuthorised, db.searchExercise
 app.get('/users/:id/exercises/:exerciseId', db.checkUserAuthorised, db.getExerciseById);
 app.put('/users/:id/exercises/:exerciseId', db.checkUserAuthorised, db.updateExercise);
 app.delete('/users/:id/exercises/:exerciseId', db.checkUserAuthorised, db.deleteExercise);
+
+app.get('/users/:id/exercises/:exerciseId/name', db.checkUserAuthorised, db.getExerciseNameById);
+
+app.get('/users/:id/routines', db.checkUserAuthorised, db.getRoutines);
+app.post('/users/:id/routines', db.checkUserAuthorised, db.addRoutine);
