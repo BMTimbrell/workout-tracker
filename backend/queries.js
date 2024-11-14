@@ -291,7 +291,7 @@ const getRoutines = async (req, res) => {
     try {
         const routines = await pool.query(
             'WITH exercise_list AS ('
-                +'SELECT routines_exercises.routine_id, exercises.id, exercises.name, array_agg(sets) AS sets '
+                +'SELECT routines_exercises.routine_id, exercises.id, exercises.name, array_agg(sets ORDER BY sets.id) AS sets, routines_exercises.exercise_order '
                 +'FROM routines_exercises '
                 +'JOIN exercises ON routines_exercises.exercise_id = exercises.id '
                 +'JOIN ('
@@ -299,14 +299,26 @@ const getRoutines = async (req, res) => {
                 +    'FROM routine_sets ORDER BY routine_sets.id'
                 +  ') sets ON sets.id = routines_exercises.set_id '
                 +'GROUP BY routines_exercises.exercise_order, routines_exercises.routine_id, exercises.id '
-                +'ORDER BY routines_exercises.exercise_order'
               +')'
-              +'SELECT routines.id, routines.name, json_agg(exercise_list) AS exercises '
+              +'SELECT routines.id, routines.name, json_agg(exercise_list ORDER BY exercise_list.exercise_order) AS exercises '
               +'FROM routines '
               +'LEFT JOIN exercise_list ON exercise_list.routine_id = routines.id '
               +'WHERE routines.user_id = $1 '
               +'GROUP BY routines.id', [id]
         );
+
+        if (routines.rows.length > 0) {
+            routines.rows = routines.rows.map(routine => {
+                if (routine.exercises[0]) {
+                    routine.exericses = routine.exercises.map(exercise => {
+                        delete exercise["routine_id"];
+                        delete exercise["exercise_order"];
+                        return exercise;
+                    });
+                }
+                return routine;
+            });
+        }
 
         return res.status(200).json({routines: routines.rows});
     } catch (error) {
@@ -331,21 +343,21 @@ const addRoutine = async (req, res) => {
         const routineId = await addRoutine();
         
         if (routineId) {
-            exercises.forEach((exercise, index) => {
-                exercise[1].forEach(async set => {
+            for (const [index, exercise] of exercises.entries()) {
+                for (const set of exercise[1]) {
                     try {
                         const result = await pool.query('INSERT INTO routine_sets (weight, reps) VALUES ($1, $2) RETURNING id', 
-                            [!isNaN(set[0]) ? Number(set[0]) : null, !isNaN(set[1]) ? Number(set[1]) : null]);
+                            [!isNaN(set.weight) ? Number(set.weight) : null, !isNaN(set.reps) ? Number(set.reps) : null]);
                         const setId = result.rows[0].id;
-
+    
                         await pool.query('INSERT INTO routines_exercises (routine_id, exercise_id, exercise_order, set_id) VALUES ($1, $2, $3, $4)', 
                         [routineId, Number(exercise[0]), index, setId]);
                     } catch (error) {
                         console.log(error);
                         return res.status(500).json({error});
                     }
-                });
-            });
+                }
+            }
         }
 
         return res.status(201).json({message: 'routine added'});
