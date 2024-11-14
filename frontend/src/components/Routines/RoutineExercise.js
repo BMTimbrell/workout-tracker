@@ -18,9 +18,9 @@ export default function RoutineExercise({ id, index, exercises, setExercises, se
                 el[1] = el[1].map((s, sIndex) => {
                     if (setIndex === sIndex) {
                         if (e.target.name === "weight") {
-                            s[0] = e.target.value;
+                            s.weight = e.target.value;
                         } else if (e.target.name === "reps") {
-                            s[1] = e.target.value;
+                            s.reps = e.target.value;
                         }
                     }
                     return s;
@@ -96,8 +96,8 @@ export default function RoutineExercise({ id, index, exercises, setExercises, se
                         {exercises[index][1].map((set, setIndex) => (
                             <React.Fragment key={setIndex}>
                                 <span>{setIndex + 1}</span>
-                                <input min="0" name="weight" type="number" value={set[0] ? set[0] : ''} onChange={e => handleChange(e, setIndex)} />
-                                <input min="1" name="reps" type="number" value={set[1] ? set[1] : ''} onChange={e => handleChange(e, setIndex)} />
+                                <input min="0" name="weight" type="number" value={set.weight ? set.weight : ''} onChange={e => handleChange(e, setIndex)} />
+                                <input min="1" name="reps" type="number" value={set.reps ? set.reps : ''} onChange={e => handleChange(e, setIndex)} />
                                 <button 
                                     type="button"
                                     className="button button-danger"
@@ -113,7 +113,7 @@ export default function RoutineExercise({ id, index, exercises, setExercises, se
                             className="button button-tertiary"
                             onClick={() => setExercises(exercises.map((el, elIndex) => {
                                 if (index === elIndex) {
-                                    el[1] = [...el[1], [0, 0]];
+                                    el[1] = [...el[1], { id: 0, weight: 0, reps: 0 }];
                                 }
                                 return el;
                             }))}

@@ -36,7 +36,7 @@ export default function Exercise({
                                 if (exercisesAdded.find(e => e === id)) {
                                     removeFromForm(id);
                                 } else {
-                                    addToForm([id, [[0, 0]]])
+                                    addToForm([id, [{ id: 0, weight: 0, reps: 0 }]]);
                                 }
                             }} 
                             className={`button ${!exercisesAdded.find(e => e === id) ? "button-secondary" : "button-success"}`}

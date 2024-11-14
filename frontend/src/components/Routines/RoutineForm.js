@@ -73,7 +73,6 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                     </div>
 
                     <button type="button" onClick={() => setExerciseModal(true)} className="button button-secondary">Add Exercises</button>
-
                     {formData.exercises.map((exercise, index) => (
                         <RoutineExercise 
                             key={index} 
@@ -153,7 +152,7 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
 
             <Modal
                 openModal={replaceModal} 
-                closeModal={() => setExerciseModal(false)} 
+                closeModal={() => setReplaceModal(false)} 
                 title="Replace Exercise"
             >
                 <div className={styles["exercise-container"]}>
@@ -170,7 +169,7 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                         <button 
                             className="button button-tertiary" 
                             onClick={() => {
-                                setExerciseModal(false);
+                                setReplaceModal(false);
                                 setExercises([]);
                             }}
                         >

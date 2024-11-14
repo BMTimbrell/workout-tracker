@@ -8,17 +8,24 @@ import { useUserContext } from '../../hooks/UserContext';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
 import Error from '../Misc/Error/Error';
-import AddRoutine from './AddRoutine.js'
+import AddRoutine from './AddRoutine';
 import Routine from './Routine';
+import EditRoutine from './EditRoutine';
 
 export default function Routines() {
     const { user } = useUserContext();
     const [addModal, setAddModal] = useState(false);
+    const [editModal, setEditModal] = useState(false);
     const [routines, setRoutines] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const navigate = useNavigate();
     const [addRoutineFooter, setAddRoutineFooter] = useState(null);
+    const [editRoutineFooter, setEditRoutineFooter] = useState(null);
+    const [selectedRoutine, setSelectedRoutine] = useState({
+        name: "",
+        exercises: []
+    });
 
     const updateRoutines = useCallback(async () => {
         setLoading(true);
@@ -62,7 +69,12 @@ export default function Routines() {
                 </button> to add a new routine.</p> : (
                 <div className={styles.container}>
                     {routines && !loading && routines.map((routine, index) => (
-                        <Routine key={index} routine={routine} />
+                        <Routine 
+                            key={index} 
+                            routine={routine} 
+                            openModal={() => setEditModal(true)} 
+                            setSelectedRoutine={setSelectedRoutine} 
+                        />
                     ))}
                 </div>
             )}
@@ -74,6 +86,21 @@ export default function Routines() {
                 footer={addRoutineFooter}
             >
                 <AddRoutine closeModal={() => setAddModal(false)} setFooter={setAddRoutineFooter} updateRoutines={updateRoutines} />
+            </Modal>
+
+            <Modal 
+                openModal={editModal} 
+                closeModal={() => setEditModal(false)} 
+                title="Edit Routine"
+                footer={editRoutineFooter}
+            >
+                <EditRoutine 
+                    closeModal={() => setEditModal(false)} 
+                    setFooter={setEditRoutineFooter} 
+                    updateRoutines={updateRoutines} 
+                    formData={selectedRoutine}
+                    setFormData={setSelectedRoutine}
+                />
             </Modal>
         </section>
     );
