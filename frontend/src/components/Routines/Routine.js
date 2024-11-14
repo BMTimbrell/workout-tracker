@@ -13,11 +13,10 @@ export default function Routine({ routine, openModal, setSelectedRoutine }) {
                         openModal();
                         setSelectedRoutine({
                             name: routine.name,
-                            exercises: routine.exercises.map(exercise => {
+                            exercises: routine.exercises[0] ? routine.exercises.map(exercise => {
                                 return [exercise.id, exercise.sets]
-                            })
+                            }) : []
                         });
-                        console.log(routine.exercises);
                     }}
                 >
                     <FontAwesomeIcon icon={faPencil} />
