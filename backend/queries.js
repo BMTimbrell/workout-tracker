@@ -367,6 +367,22 @@ const addRoutine = async (req, res) => {
     }
 };
 
+const deleteRoutine = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const routineId = parseInt(req.params.routineId);
+
+    try {
+        await pool.query('DELETE FROM routines WHERE user_id = $1 AND id = $2', 
+        [userId, routineId]);
+
+        return res.status(200).json({message: 'routine deleted'});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
+
 
 
 module.exports = {
@@ -384,5 +400,6 @@ module.exports = {
     updateExercise,
     deleteExercise,
     getRoutines,
-    addRoutine
+    addRoutine,
+    deleteRoutine
 };

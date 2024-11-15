@@ -75,3 +75,4 @@ app.get('/users/:id/exercises/:exerciseId/name', db.checkUserAuthorised, db.getE
 
 app.get('/users/:id/routines', db.checkUserAuthorised, db.getRoutines);
 app.post('/users/:id/routines', db.checkUserAuthorised, db.addRoutine);
+app.delete('/users/:id/routines/:routineId', db.checkUserAuthorised, db.deleteRoutine);
