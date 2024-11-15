@@ -367,11 +367,33 @@ const addRoutine = async (req, res) => {
     }
 };
 
+const updateRoutine = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const exerciseId = parseInt(req.params.exerciseId);
+    const { name, bodypart } = req.body;
+
+    try {
+        await pool.query('UPDATE exercises SET name = $1, bodypart = $2 WHERE user_id = $3 AND id = $4', 
+        [name, bodypart, userId, exerciseId]);
+
+        return res.status(200).json({message: 'exercise updated'});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
 const deleteRoutine = async (req, res) => {
     const userId = parseInt(req.params.id);
     const routineId = parseInt(req.params.routineId);
 
     try {
+        const setIds = await pool.query('SELECT set_id FROM routines_exercises WHERE routine_id = $1', 
+            [routineId]);
+        
+        setIds.rows.forEach(async set => {
+            await pool.query('DELETE FROM routine_sets WHERE id = $1', [set.set_id]);
+        });
+        
         await pool.query('DELETE FROM routines WHERE user_id = $1 AND id = $2', 
         [userId, routineId]);
 
@@ -381,8 +403,6 @@ const deleteRoutine = async (req, res) => {
         return res.status(500).json({error});
     }
 };
-
-
 
 
 module.exports = {
