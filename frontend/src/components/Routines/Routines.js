@@ -23,6 +23,7 @@ export default function Routines() {
     const [addRoutineFooter, setAddRoutineFooter] = useState(null);
     const [editRoutineFooter, setEditRoutineFooter] = useState(null);
     const [selectedRoutine, setSelectedRoutine] = useState({
+        id: 0,
         name: "",
         exercises: []
     });

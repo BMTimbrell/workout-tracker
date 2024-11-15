@@ -4,6 +4,7 @@ import { useUserContext } from '../../hooks/UserContext';
 import RoutineForm from './RoutineForm';
 import modalStyles from '../Misc/Modal/Modal.module.css';
 import { addRoutine } from '../../api/api';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddRoutine({ closeModal, setFooter, updateRoutines }) {
     const [formData, setFormData] = useState({
@@ -15,13 +16,17 @@ export default function AddRoutine({ closeModal, setFooter, updateRoutines }) {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(false);
 
+    const navigate = useNavigate();
+
     const handleSubmit = async e => {
         e.preventDefault();
         setSubmitting(true);
 
         const response = await addRoutine(user?.id, formData.name, formData.exercises);
         
-        if (response) {
+        if (response?.authorisationFailed) {
+            navigate('/logout');
+        } else if (response) {
             setError(false);
             setFormData({
                 name: "",

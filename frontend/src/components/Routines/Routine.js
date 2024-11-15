@@ -12,6 +12,7 @@ export default function Routine({ routine, openModal, setSelectedRoutine }) {
                     onClick={() => {
                         openModal();
                         setSelectedRoutine({
+                            id: routine.id,
                             name: routine.name,
                             exercises: routine.exercises[0] ? routine.exercises.map(exercise => {
                                 return [exercise.id, exercise.sets]

@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrashCan, faRotate, faRotateLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 import DropdownButton from '../Misc/DropdownButton/DropdownButton';
 
-export default function RoutineExercise({ id, index, exercises, setExercises, selectedExercise, toggleSelected, replace }) {
+export default function RoutineExercise({ id, index, exercises, setExercises, selectedExercise, toggleSelected, replace, openDeleteModal }) {
     const { user } = useUserContext();
     const [exercise, loading, error]  = useFetch(user && id && `/users/${user?.id}/exercises/${id}/name`);
 
@@ -38,12 +38,6 @@ export default function RoutineExercise({ id, index, exercises, setExercises, se
                 });
             }
             return el;
-        }));
-    };
-
-    const deleteExercise = exerciseIndex => {
-        setExercises(exercises.filter((el, elIndex) => {
-            return elIndex !== exerciseIndex;
         }));
     };
 
@@ -78,10 +72,10 @@ export default function RoutineExercise({ id, index, exercises, setExercises, se
                                 <button 
                                     type="button" 
                                     className="button"
-                                    onClick={() => deleteExercise(index)}
+                                    onClick={() => openDeleteModal({ index, name: exercise.name })}
                                 >
                                     <FontAwesomeIcon style={{color: 'var(--danger)'}} icon={faTrashCan}/>
-                                    <span>Remove</span>
+                                    <span>Delete</span>
                                 </button>
                             </DropdownButton>
                         </div>

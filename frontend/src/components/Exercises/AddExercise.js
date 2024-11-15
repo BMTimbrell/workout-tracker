@@ -6,6 +6,7 @@ import modalStyles from '../Misc/Modal/Modal.module.css';
 import { useState, useEffect } from 'react';
 import { addExercise } from '../../api/api';
 import { useUserContext } from '../../hooks/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddExercise({ closeModal, bodyparts, updateExercises }) {
     const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ export default function AddExercise({ closeModal, bodyparts, updateExercises }) 
         bodypart: "Other"
     });
 
+    const navigate = useNavigate();
     const { user } = useUserContext();
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(false);
@@ -36,7 +38,9 @@ export default function AddExercise({ closeModal, bodyparts, updateExercises }) 
         setSubmitting(true);
         const response = await addExercise(user?.id, formData.name, formData.bodypart);
         
-        if (response) {
+        if (response?.authorizationFailed) {
+            navigate('/logout');
+        } else if (response) {
             setError(false);
             setFormData({
                 name: "",

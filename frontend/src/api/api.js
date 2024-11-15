@@ -162,6 +162,7 @@ export const addExercise = async (userId, name, bodypart) => {
         });
 
         if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
         
         return null;
     } catch (error) {
@@ -186,6 +187,7 @@ export const editExercise = async (userId, exerciseId, name, bodypart) => {
         });
 
         if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
         
         return null;
     } catch (error) {
@@ -206,6 +208,7 @@ export const deleteExercise = async (userId, exerciseId) => {
         });
 
         if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
         
         return null;
     } catch (error) {
@@ -225,7 +228,7 @@ export const getRoutines = async (id, controller) => {
         });
         
         if (response.ok) return response.json();
-        else if (response.status === 401) return { authorisationFailed: true };
+        if (response.status === 401) return { authorisationFailed: true };
 
         return null;
     } catch (error) {
@@ -252,9 +255,31 @@ export const addRoutine = async (id, name, exercises) => {
         });
         
         if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
 
         return null;
     } catch (error) {
+        return null;
+    }
+};
+
+export const deleteRoutine = async (userId, routineId) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${userId}/routines/${routineId}`, {
+            method: 'DELETE',
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+
+        if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
+        
+        return null;
+    } catch (error) {
+        console.log(error);
         return null;
     }
 };

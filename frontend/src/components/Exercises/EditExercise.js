@@ -9,6 +9,7 @@ import { useUserContext } from '../../hooks/UserContext';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { editExercise, deleteExercise } from '../../api/api';
+import { useNavigate } from 'react-router-dom';
 
 export default function EditExercise({ formData, setFormData, closeModal, bodyparts, updateExercises }) {
     const { user } = useUserContext();
@@ -17,6 +18,7 @@ export default function EditExercise({ formData, setFormData, closeModal, bodypa
     const [error, setError] = useState(false);
     const [deleteError, setDeleteError] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = e => {
         if (e.target.id === "name") {
@@ -37,7 +39,9 @@ export default function EditExercise({ formData, setFormData, closeModal, bodypa
         setSubmitting(true);
         const response = await editExercise(user?.id, formData.id, formData.name, formData.bodypart);
         
-        if (response) {
+        if (response?.authorizationFailed) {
+            navigate('/logout');
+        } else if (response) {
             setError(false);
             updateExercises();
             closeModal();
@@ -52,7 +56,9 @@ export default function EditExercise({ formData, setFormData, closeModal, bodypa
         setDeleting(true);
         const response = await deleteExercise(user?.id, formData.id);
         
-        if (response) {
+        if (response?.authorisationFailed) {
+            navigate('/logout');
+        } else if (response) {
             setError(false);
             setDeleteError(false);
             updateExercises();

@@ -15,8 +15,10 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
 
     const [replaceModal, setReplaceModal] = useState(false);
     const [indexToReplace, setIndexToReplace] = useState(null);
-
     const [selectedExercise, setSelectedExercise] = useState(null);
+
+    const [deleteModal, setDeleteModal] = useState(false);
+    const [exerciseToRemove, setExerciseToRemove] = useState(null);
 
     const handleChange = e => {
         setFormData(prev => ({
@@ -54,6 +56,21 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                 ...prev.exercises.slice(indexToReplace + 1)
             ]
         }));
+    };
+
+    const openDeleteModal = exercise => {
+        setExerciseToRemove(exercise);
+        setDeleteModal(true);
+    };
+
+    const deleteFormExercise = () => {
+        setFormData(prev => ({
+            ...prev,
+            exercises: prev.exercises.filter((exercise, index) => {
+                return index !== exerciseToRemove.index;
+            })
+        }));
+        setDeleteModal(false);
     };
 
     return (
@@ -97,6 +114,7 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                                 setIndexToReplace(index);
                                 setReplaceModal(true);
                             }}
+                            openDeleteModal={ex => openDeleteModal(ex)}
                         >
                         </RoutineExercise>
                     ))}
@@ -188,6 +206,26 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                             }}
                         >
                             Replace{exercises.length > 1 && ` (${exercises.length})`}
+                        </button>
+                    </div>
+                </ModalFooter>
+            </Modal>
+
+            <Modal 
+                openModal={deleteModal} 
+                closeModal={() => setDeleteModal(false)} 
+                title="Delete Routine?"
+            >
+                <p style={{padding: "1rem"}}>Are you sure you want to delete "{exerciseToRemove?.name}" and all of its sets from this routine? This process can't be undone.</p>
+
+                <ModalFooter>
+                    <div className={modalStyles["button-container"]}>
+                        <button onClick={() => setDeleteModal(false)} className="button button-tertiary">Cancel</button>
+                        <button 
+                            className="button button-danger" 
+                            onClick={deleteFormExercise}
+                        >
+                            Delete
                         </button>
                     </div>
                 </ModalFooter>
