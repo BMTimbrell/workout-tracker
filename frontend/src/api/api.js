@@ -283,3 +283,29 @@ export const deleteRoutine = async (userId, routineId) => {
         return null;
     }
 };
+
+export const editRoutine = async (userId, routineId, name, exercises, setsToDelete) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${userId}/routines/${routineId}`, {
+            method: 'PUT',
+            credentials: "include",
+            body: JSON.stringify({
+                name,
+                exercises,
+                setsToDelete
+            }),
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+
+        if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
+        
+        return null;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};

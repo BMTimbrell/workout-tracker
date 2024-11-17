@@ -12,7 +12,7 @@ import Error from '../Misc/Error/Error';
 import errorStyles from '../Misc/Error/Error.module.css';
 import { deleteRoutine } from '../../api/api';
 
-export default function EditRoutine({ closeModal, setFooter, updateRoutines, formData, setFormData }) {
+export default function EditRoutine({ closeModal, setFooter, updateRoutines, formData, setFormData, onClose }) {
     const { user } = useUserContext();
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(false);
@@ -23,23 +23,26 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
 
     const handleSubmit = async e => {
         e.preventDefault();
-        // setSubmitting(true);
-        
-        // const response = await addRoutine(user?.id, formData.name, formData.exercises);
-        
-        // if (response) {
-        //     setError(false);
-        //     setFormData({
-        //         name: "",
-        //         exercises: []
-        //     });
-        //     updateRoutines();
-        //     closeModal();
-        // } else {
-        //     setError(true);
-        // }
 
-        // setSubmitting(false);
+        setSubmitting(true);
+        
+        const response = await editRoutine(user?.id, formData.id, formData.name, formData.exercises, formData.setsToDelete);
+        
+        if (response) {
+            setError(false);
+            setFormData({
+                id: 0,
+                name: "",
+                exercises: [],
+                setsToDelete: []
+            });
+            updateRoutines();
+            closeModal();
+        } else {
+            setError(true);
+        }
+
+        setSubmitting(false);
     };
 
     const handleDelete = async () => {
@@ -76,19 +79,12 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
                 <div className={modalStyles["button-container"]}>
                     <button 
                         className="button button-tertiary" 
-                        onClick={() => {
-                            setFormData({
-                                name: "",
-                                exercises: []
-                            });
-                            setError(false);
-                            closeModal();
-                        }}
+                        onClick={() => closeModal()}
                     >
                         Close
                     </button>
                     <button 
-                        form="addRoutineForm" 
+                        form="editRoutineForm" 
                         type="submit" 
                         className="button button-primary" 
                         disabled={(!formData.name || submitting) && true}
@@ -103,8 +99,11 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
     }, [formData.name, submitting]);
 
     useEffect(() => {
-        setError(false);
-    }, [closeModal]);
+        if (onClose) {
+            setError(false);
+            updateRoutines();
+        }
+    }, [onClose, updateRoutines]);
 
     useEffect(() => {
         setDeleteError(false);
@@ -116,7 +115,8 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
                 handleSubmit={handleSubmit} 
                 formData={formData} 
                 error={error} 
-                setFormData={setFormData} 
+                setFormData={setFormData}
+                isEdit={true} 
             />
 
             <Modal 

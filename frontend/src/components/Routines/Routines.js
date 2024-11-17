@@ -25,7 +25,8 @@ export default function Routines() {
     const [selectedRoutine, setSelectedRoutine] = useState({
         id: 0,
         name: "",
-        exercises: []
+        exercises: [],
+        setsToDelete: []
     });
 
     const updateRoutines = useCallback(async () => {
@@ -86,7 +87,12 @@ export default function Routines() {
                 title="Add Routine"
                 footer={addRoutineFooter}
             >
-                <AddRoutine closeModal={() => setAddModal(false)} setFooter={setAddRoutineFooter} updateRoutines={updateRoutines} />
+                <AddRoutine 
+                    closeModal={() => setAddModal(false)} 
+                    setFooter={setAddRoutineFooter} 
+                    updateRoutines={updateRoutines} 
+                    onClose={!addModal} 
+                />
             </Modal>
 
             <Modal 
@@ -101,6 +107,7 @@ export default function Routines() {
                     updateRoutines={updateRoutines} 
                     formData={selectedRoutine}
                     setFormData={setSelectedRoutine}
+                    onClose={!editModal}
                 />
             </Modal>
         </section>

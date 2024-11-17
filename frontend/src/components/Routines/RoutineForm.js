@@ -8,7 +8,7 @@ import modalStyles from '../Misc/Modal/Modal.module.css';
 import styles from './RoutineForm.module.css';
 import RoutineExercise from './RoutineExercise';
 
-export default function RoutineForm({ handleSubmit, formData, setFormData, error }) {
+export default function RoutineForm({ handleSubmit, formData, setFormData, error, isEdit = false }) {
 
     const [exerciseModal, setExerciseModal] = useState(false);
     const [exercises, setExercises] = useState([]);
@@ -49,6 +49,17 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
     };
 
     const replaceExercise = exercises => {
+        if (isEdit) {
+            formData.exercises[indexToReplace][1].forEach(set => {
+                if (set.id) {
+                    setFormData(prev => ({
+                        ...prev,
+                        setsToDelete: [...prev.setsToDelete, set.id]
+                    }))
+                }
+            });
+        }
+
         setFormData(prev => ({
             ...prev,
             exercises: [
@@ -64,6 +75,17 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
     };
 
     const deleteFormExercise = () => {
+        if (isEdit) {
+            formData.exercises[exerciseToRemove.index][1].forEach(set => {
+                if (set.id) {
+                    setFormData(prev => ({
+                        ...prev,
+                        setsToDelete: [...prev.setsToDelete, set.id]
+                    }))
+                }
+            });
+        }
+
         setFormData(prev => ({
             ...prev,
             exercises: prev.exercises.filter((exercise, index) => {
@@ -75,7 +97,7 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
 
     return (
         <>
-            <form id="addRoutineForm" className="form" onSubmit={handleSubmit}>
+            <form id={isEdit ? "editRoutineForm" : "addRoutineForm"} className="form" onSubmit={handleSubmit}>
                 <div className="input-container">
                     <div className="floating-input">
                         <input 
@@ -115,6 +137,10 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                                 setReplaceModal(true);
                             }}
                             openDeleteModal={ex => openDeleteModal(ex)}
+                            removeFromDb={(setId) => setFormData(prev => ({
+                                ...prev,
+                                setsToDelete: [...prev.setsToDelete, setId]
+                            }))}
                         >
                         </RoutineExercise>
                     ))}
@@ -122,7 +148,8 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                     {error && <Error style={errorStyles['form-error']} text="Submission failed" />}
                 </div>
             </form>
-
+            
+            {/* add exercise modal */}
             <Modal
                 openModal={exerciseModal} 
                 closeModal={() => setExerciseModal(false)} 
@@ -168,6 +195,7 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                 </ModalFooter>
             </Modal>
 
+            {/* replace exercise modal */}
             <Modal
                 openModal={replaceModal} 
                 closeModal={() => setReplaceModal(false)} 
@@ -211,6 +239,8 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                 </ModalFooter>
             </Modal>
 
+
+            {/* delete exercise modal */}
             <Modal 
                 openModal={deleteModal} 
                 closeModal={() => setDeleteModal(false)} 

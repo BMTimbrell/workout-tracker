@@ -5,10 +5,20 @@ import Error from '../Misc/Error/Error';
 import styles from './RoutineExercise.module.css';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrashCan, faRotate, faRotateLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrashCan, faRotate, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import DropdownButton from '../Misc/DropdownButton/DropdownButton';
 
-export default function RoutineExercise({ id, index, exercises, setExercises, selectedExercise, toggleSelected, replace, openDeleteModal }) {
+export default function RoutineExercise({ 
+    id, 
+    index, 
+    exercises, 
+    setExercises, 
+    selectedExercise, 
+    toggleSelected, 
+    replace, 
+    openDeleteModal,
+    removeFromDb
+ }) {
     const { user } = useUserContext();
     const [exercise, loading, error]  = useFetch(user && id && `/users/${user?.id}/exercises/${id}/name`);
 
@@ -31,6 +41,11 @@ export default function RoutineExercise({ id, index, exercises, setExercises, se
     };
 
     const deleteSet = setIndex => {
+        // remove set from db if already in db
+        if (exercises[index][1][setIndex].id) {
+            removeFromDb(exercises[index][1][setIndex].id);
+        }
+
         setExercises(exercises.map((el, elIndex) => {
             if (index === elIndex) {
                 el[1] = el[1].filter((s, sIndex) => {

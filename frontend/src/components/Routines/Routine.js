@@ -11,13 +11,15 @@ export default function Routine({ routine, openModal, setSelectedRoutine }) {
                     className="button button-secondary" 
                     onClick={() => {
                         openModal();
-                        setSelectedRoutine({
+                        setSelectedRoutine(prev => ({
+                            ...prev,
                             id: routine.id,
                             name: routine.name,
                             exercises: routine.exercises[0] ? routine.exercises.map(exercise => {
                                 return [exercise.id, exercise.sets]
-                            }) : []
-                        });
+                            }) : [],
+                            setsToDelete: []
+                        }));
                     }}
                 >
                     <FontAwesomeIcon icon={faPencil} />

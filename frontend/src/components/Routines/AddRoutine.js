@@ -6,7 +6,7 @@ import modalStyles from '../Misc/Modal/Modal.module.css';
 import { addRoutine } from '../../api/api';
 import { useNavigate } from 'react-router-dom';
 
-export default function AddRoutine({ closeModal, setFooter, updateRoutines }) {
+export default function AddRoutine({ closeModal, setFooter, updateRoutines, onClose }) {
     const [formData, setFormData] = useState({
         name: "",
         exercises: []
@@ -47,14 +47,7 @@ export default function AddRoutine({ closeModal, setFooter, updateRoutines }) {
                 <div className={modalStyles["button-container"]}>
                     <button 
                         className="button button-tertiary" 
-                        onClick={() => {
-                            setFormData({
-                                name: "",
-                                exercises: []
-                            });
-                            setError(false);
-                            closeModal();
-                        }}
+                        onClick={() => closeModal()}
                     >
                         Close
                     </button>
@@ -71,6 +64,16 @@ export default function AddRoutine({ closeModal, setFooter, updateRoutines }) {
         );
         // eslint-disable-next-line
     }, [formData.name, submitting]);
+
+    useEffect(() => {
+        if (onClose) {
+            setFormData({
+                name: "",
+                exercises: []
+            });
+            setError(false);
+        }
+    }, [onClose]);
     
     return (
         <>
