@@ -347,7 +347,7 @@ const addRoutine = async (req, res) => {
                 for (const set of exercise[1]) {
                     try {
                         const result = await pool.query('INSERT INTO routine_sets (weight, reps) VALUES ($1, $2) RETURNING id', 
-                            [!isNaN(set.weight) ? Number(set.weight) : null, !isNaN(set.reps) ? Number(set.reps) : null]);
+                            [!isNaN(set.weight) ? Number(set.weight) : 0, !isNaN(set.reps) ? Number(set.reps) : 0]);
                         const setId = result.rows[0].id;
     
                         await pool.query('INSERT INTO routines_exercises (routine_id, exercise_id, exercise_order, set_id) VALUES ($1, $2, $3, $4)', 
@@ -369,15 +369,43 @@ const addRoutine = async (req, res) => {
 
 const updateRoutine = async (req, res) => {
     const userId = parseInt(req.params.id);
-    const exerciseId = parseInt(req.params.exerciseId);
-    const { name, bodypart } = req.body;
+    const routineId = parseInt(req.params.routineId);
+    const { 
+        name, 
+        exercises,
+        setsToDelete
+    } = req.body;
 
     try {
-        await pool.query('UPDATE exercises SET name = $1, bodypart = $2 WHERE user_id = $3 AND id = $4', 
-        [name, bodypart, userId, exerciseId]);
 
-        return res.status(200).json({message: 'exercise updated'});
+        await pool.query('UPDATE routines SET name = $1 WHERE id = $2 AND user_id = $3', [name, routineId, userId]);
+
+        for (const set of setsToDelete) {
+            await pool.query('DELETE FROM routine_sets WHERE id = $1', [set]);
+        }
+
+        for (const [index, exercise] of exercises.entries()) {
+            for (const set of exercise[1]) {
+                if (set.id) {
+                    await pool.query('UPDATE routine_sets SET weight = $1, reps = $2 WHERE id = $3', 
+                        [!isNaN(set.weight) ? Number(set.weight) : 0, !isNaN(set.reps) ? Number(set.reps) : 0, set.id]);
+                } else {
+                    const result = await pool.query('INSERT INTO routine_sets (weight, reps) VALUES ($1, $2) RETURNING id', 
+                            [!isNaN(set.weight) ? Number(set.weight) : 0, !isNaN(set.reps) ? Number(set.reps) : 0]);
+
+                    set.id = result.rows[0].id;
+                }
+
+                await pool.query('INSERT INTO routines_exercises (routine_id, exercise_id, set_id, exercise_order) VALUES ($1, $2, $3, $4) '
+                    +'ON CONFLICT (set_id) '
+                    +'DO UPDATE SET exercise_order = $4', [routineId, exercise[0], set.id, index]);
+            }
+        }
+        
+
+        return res.status(200).json({message: 'routine updated'});
     } catch (error) {
+        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -421,5 +449,6 @@ module.exports = {
     deleteExercise,
     getRoutines,
     addRoutine,
+    updateRoutine,
     deleteRoutine
 };
