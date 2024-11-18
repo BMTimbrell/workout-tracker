@@ -20,6 +20,7 @@ export default function Home() {
     return (
         <>
             <h1>Start Workout</h1>
+
             <Routines />
         </>
     );

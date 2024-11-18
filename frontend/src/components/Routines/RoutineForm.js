@@ -7,11 +7,20 @@ import Exercises from '../Exercises/Exercises';
 import modalStyles from '../Misc/Modal/Modal.module.css';
 import styles from './RoutineForm.module.css';
 import RoutineExercise from './RoutineExercise';
+import Tabs from '../Misc/Tabs/Tabs';
+import ExerciseInfo from '../Exercises/ExerciseInfo';
 
 export default function RoutineForm({ handleSubmit, formData, setFormData, error, isEdit = false }) {
 
     const [exerciseModal, setExerciseModal] = useState(false);
     const [exercises, setExercises] = useState([]);
+
+    const [infoModal, setInfoModal] = useState(false);
+    const [infoExercise, setInfoExercise] = useState({
+        name: "",
+        id: 0,
+        userId: 0
+    });
 
     const [replaceModal, setReplaceModal] = useState(false);
     const [indexToReplace, setIndexToReplace] = useState(null);
@@ -141,8 +150,16 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                                 ...prev,
                                 setsToDelete: [...prev.setsToDelete, setId]
                             }))}
-                        >
-                        </RoutineExercise>
+                            setInfo={info => {
+                                setInfoExercise(prev => ({
+                                    ...prev,
+                                    name: info.name,
+                                    id: info.id,
+                                    userId: info.userId
+                                }));
+                                setInfoModal(true);
+                            }}
+                        />
                     ))}
 
                     {error && <Error style={errorStyles['form-error']} text="Submission failed" />}
@@ -258,6 +275,21 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                             Delete
                         </button>
                     </div>
+                </ModalFooter>
+            </Modal>
+
+            {/* exercise info */}
+            <Modal 
+                openModal={infoModal} 
+                closeModal={() => setInfoModal(false)} 
+                title={infoExercise.name}
+            >
+                <Tabs tabNames={!infoExercise.userId ? ["About", "History", "Graph"] : ["History", "Graph"]}>
+                    {!infoExercise.userId && <ExerciseInfo id={infoExercise.id} />}
+                    <p>hi</p>
+                </Tabs>
+                <ModalFooter>
+                    <button className="button button-tertiary" onClick={() => setInfoModal(false)}>Close</button>
                 </ModalFooter>
             </Modal>
         </>

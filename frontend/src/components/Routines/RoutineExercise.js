@@ -5,7 +5,7 @@ import Error from '../Misc/Error/Error';
 import styles from './RoutineExercise.module.css';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrashCan, faRotate, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrashCan, faRotate, faRotateLeft, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import DropdownButton from '../Misc/DropdownButton/DropdownButton';
 
 export default function RoutineExercise({ 
@@ -17,7 +17,8 @@ export default function RoutineExercise({
     toggleSelected, 
     replace, 
     openDeleteModal,
-    removeFromDb
+    removeFromDb,
+    setInfo
  }) {
     const { user } = useUserContext();
     const [exercise, loading, error]  = useFetch(user && id && `/users/${user?.id}/exercises/${id}/name`);
@@ -56,6 +57,15 @@ export default function RoutineExercise({
         }));
     };
 
+    const addSet = () => { 
+        setExercises(exercises.map((el, elIndex) => {
+            if (index === elIndex) {
+                el[1] = [...el[1], { id: 0, weight: 0, reps: 0 }];
+            }
+            return el;
+        }));
+    };
+
     return (
         <div className={styles.exercise}>
             {loading ? <LoadingSpinner /> : error ? <Error text="Failed to load data" /> : undefined}
@@ -75,6 +85,20 @@ export default function RoutineExercise({
                             </button>
 
                             <DropdownButton>
+                                <button 
+                                    type="button" 
+                                    className="button"
+                                    onClick={() => setInfo({
+                                        name: exercise.name,
+                                        id,
+                                        userId: exercise.user_id
+                                    })}
+                                        
+                                >
+                                    <FontAwesomeIcon style={{color: 'var(--primary)'}} icon={faInfoCircle}/>
+                                    <span>Info</span>
+                                </button>
+
                                 <button 
                                     type="button" 
                                     className="button"
@@ -109,7 +133,7 @@ export default function RoutineExercise({
                                 <input min="1" name="reps" type="number" value={set.reps ? set.reps : ''} onChange={e => handleChange(e, setIndex)} />
                                 <button 
                                     type="button"
-                                    className="button button-danger"
+                                    className="button button-secondary"
                                     onClick={() => deleteSet(setIndex)}
                                 >
                                     <FontAwesomeIcon icon={faTrashCan} />
@@ -120,12 +144,7 @@ export default function RoutineExercise({
                         <button 
                             type="button" 
                             className="button button-tertiary"
-                            onClick={() => setExercises(exercises.map((el, elIndex) => {
-                                if (index === elIndex) {
-                                    el[1] = [...el[1], { id: 0, weight: 0, reps: 0 }];
-                                }
-                                return el;
-                            }))}
+                            onClick={addSet}
                         >
                             <FontAwesomeIcon icon={faPlus} />
                             <span>Add Set</span>

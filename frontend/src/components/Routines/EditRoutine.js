@@ -1,5 +1,5 @@
 import ModalFooter from '../Misc/Modal/ModalFooter';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useUserContext } from '../../hooks/UserContext';
 import RoutineForm from './RoutineForm';
 import modalStyles from '../Misc/Modal/Modal.module.css';
@@ -19,6 +19,8 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
     const [deleting, setDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
+    const didMount = useRef(false);
+    const [changesMade, setChangesMade] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async e => {
@@ -87,7 +89,7 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
                         form="editRoutineForm" 
                         type="submit" 
                         className="button button-primary" 
-                        disabled={(!formData.name || submitting) && true}
+                        disabled={(!formData.name || submitting || !changesMade) && true}
                     >
                         {!submitting ? 'Save' : 'Saving...'}
                     </button>
@@ -96,18 +98,29 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
             </ModalFooter>
         );
         // eslint-disable-next-line
-    }, [formData.name, submitting]);
+    }, [formData.name, submitting, changesMade]);
 
     useEffect(() => {
         if (onClose) {
             setError(false);
             updateRoutines();
+            setChangesMade(false);
+            didMount.current = false;
         }
     }, [onClose, updateRoutines]);
 
     useEffect(() => {
         setDeleteError(false);
     }, [deleteModal]);
+
+    useEffect(() => {
+        
+        if (didMount.current) {
+            setChangesMade(true);
+        } else if (formData.id) {
+            didMount.current = true;
+        }
+    }, [formData, formData.id]);
     
     return (
         <>
@@ -116,7 +129,7 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
                 formData={formData} 
                 error={error} 
                 setFormData={setFormData}
-                isEdit={true} 
+                isEdit={true}
             />
 
             <Modal 
