@@ -7,7 +7,7 @@
     --hamburger-height: calc(var(--bar-height) * 3 + var(--hamburger-gap) * 2);
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 99999999999999999;
     background-color: var(--header-bgcolor);
     color: white;
 }

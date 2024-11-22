@@ -1,7 +1,9 @@
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './Routines.module.css';
+import modalStyles from '../Misc/Modal/Modal.module.css';
 import Modal from '../Misc/Modal/Modal';
+import ModalFooter from '../Misc/Modal/ModalFooter';
 import { useState, useEffect, useCallback } from 'react';
 import { getRoutines } from '../../api/api';
 import { useUserContext } from '../../hooks/UserContext';
@@ -11,11 +13,16 @@ import Error from '../Misc/Error/Error';
 import AddRoutine from './AddRoutine';
 import Routine from './Routine';
 import EditRoutine from './EditRoutine';
+import UseRoutine from './UseRoutine';
 
-export default function Routines() {
+export default function Routines({ workout, setWorkout }) {
     const { user } = useUserContext();
+
     const [addModal, setAddModal] = useState(false);
     const [editModal, setEditModal] = useState(false);
+    const [workoutModal, setWorkoutModal] = useState(false);
+    const [newWorkoutModal, setNewWorkoutModal] = useState(false);
+
     const [routines, setRoutines] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -53,6 +60,34 @@ export default function Routines() {
         updateRoutines();
     }, [updateRoutines]);
 
+    const formatWorkout = () => {
+        // make sets empty and use routine sets as placeholders for workout form
+        const exercises = selectedRoutine.exercises.map(exercise => {
+            const placeholders = exercise[1];
+            const sets = exercise[1].map((set, index) => ({
+                 id: set.id, 
+                 weight: 0, 
+                 reps: 0, 
+                 placeholder: { 
+                    weight: placeholders[index].weight,
+                    reps: placeholders[index].reps
+                },
+                completed: false 
+            }));
+            exercise = [
+                exercise[0],
+                sets
+            ];
+            return exercise;
+        });
+
+        setWorkout({
+            name: selectedRoutine.name,
+            exercises,
+            startTime: Date.now()
+        });
+    };
+
     return (
         <section>
             <div className={styles["heading-container"]}>
@@ -75,7 +110,8 @@ export default function Routines() {
                             key={index} 
                             routine={routine} 
                             openModal={() => setEditModal(true)} 
-                            setSelectedRoutine={setSelectedRoutine} 
+                            setSelectedRoutine={setSelectedRoutine}
+                            openWorkoutModal={() => setWorkoutModal(true)} 
                         />
                     ))}
                 </div>
@@ -109,6 +145,64 @@ export default function Routines() {
                     setFormData={setSelectedRoutine}
                     onClose={!editModal}
                 />
+            </Modal>
+
+            <Modal 
+                openModal={workoutModal} 
+                closeModal={() => setWorkoutModal(false)} 
+                title={selectedRoutine.name}
+            >
+                <UseRoutine routine={selectedRoutine} />
+                <ModalFooter>
+                    <div className={modalStyles["button-container"]}>
+                        <button className="button button-tertiary" onClick={() => setWorkoutModal(false)}>
+                            Cancel
+                        </button>
+                        <button className="button button-primary" 
+                            onClick={() => {
+                                if (!workout) {
+                                    setWorkoutModal(false);
+                                    formatWorkout();
+                                    window.scrollTo({ top: 0, behavior: 'smooth'});
+                                } else {
+                                    setNewWorkoutModal(true);
+                                }
+                            }}
+                        >
+                            Start Workout
+                        </button>
+                    </div>
+                </ModalFooter>
+            </Modal>
+
+            <Modal 
+                openModal={newWorkoutModal} 
+                closeModal={() => setNewWorkoutModal(false)} 
+                title="Workout in Progress"
+            >
+                <p>A workout is already in progress. If you start a new one, the old one will be cancelled.</p>
+                <ModalFooter>
+                    <div className={modalStyles["button-container"]}>
+                        <button className="button button-tertiary" 
+                            onClick={() => {
+                                setNewWorkoutModal(false);
+                                setWorkoutModal(false);
+                            }}
+                        >
+                            Continue Current Workout
+                        </button>
+                        <button className="button button-danger" 
+                            onClick={() => {
+                                setNewWorkoutModal(false);
+                                setWorkoutModal(false);
+                                formatWorkout();
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                        >
+                            Start New Workout
+                        </button>
+                    </div>
+                </ModalFooter>
             </Modal>
         </section>
     );

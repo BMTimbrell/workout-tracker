@@ -10,7 +10,7 @@ export default function Register() {
 
     useEffect(() => {
         if (user) navigate('/');
-    }, [user]);
+    }, [user, navigate]);
 
     return (
         <>

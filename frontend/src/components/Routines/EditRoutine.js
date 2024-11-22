@@ -78,12 +78,12 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
                     <span>Delete</span>
                 </button>
 
-                <div className={modalStyles["button-container"]}>
+                <div className={modalStyles["button-container2"]}>
                     <button 
                         className="button button-tertiary" 
                         onClick={() => closeModal()}
                     >
-                        Close
+                        Cancel
                     </button>
                     <button 
                         form="editRoutineForm" 
@@ -137,7 +137,7 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
                 closeModal={() => setDeleteModal(false)} 
                 title="Delete Routine?"
             >
-                <p style={{padding: "1rem"}}>Are you sure you want to delete "{formData.name}"? This process can't be undone.</p>
+                <p>Are you sure you want to delete "{formData.name}"? This process can't be undone.</p>
                 {deleteError && <Error style={errorStyles["margin"]} text="Failed to remove routine from database"  />}
                 <ModalFooter>
                     <div className={modalStyles["button-container"]}>

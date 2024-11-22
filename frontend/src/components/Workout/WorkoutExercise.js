@@ -2,16 +2,18 @@ import useFetch from '../../hooks/useFetch';
 import { useUserContext } from '../../hooks/UserContext';
 import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
 import Error from '../Misc/Error/Error';
-import styles from './RoutineExercise.module.css';
+import styles from '../Routines/RoutineExercise.module.css';
+import workoutStyles from './WorkoutExercise.module.css';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrashCan, faRotate, faRotateLeft, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrashCan, faRotate, faRotateLeft, faInfoCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
 import DropdownButton from '../Misc/DropdownButton/DropdownButton';
 import Modal from '../Misc/Modal/Modal';
 import ModalFooter from '../Misc/Modal/ModalFooter';
 import modalStyles from '../Misc/Modal/Modal.module.css';
+import { calc1RM } from '../../utils/utils';
 
-export default function RoutineExercise({ 
+export default function WorkoutExercise({ 
     id, 
     index, 
     exercises, 
@@ -20,25 +22,26 @@ export default function RoutineExercise({
     toggleSelected, 
     replace, 
     openDeleteModal,
-    removeFromDb,
     setInfo
  }) {
     const { user } = useUserContext();
     const [exercise, loading, error]  = useFetch(user && id && `/users/${user?.id}/exercises/${id}/name`);
 
     const [deleteModal, setDeleteModal] = useState(false);
-    const [removeSet, setRemoveSet] = useState(false);
+    const [removeSet, setRemoveSet] = useState(null);
 
     const handleChange = (e, setIndex) => {
         setExercises(exercises.map((el, elIndex) => {
             if (index === elIndex) {
                 el[1] = el[1].map((s, sIndex) => {
                     if (setIndex === sIndex) {
+                        if (s.completed) s.completed = false;
                         if (e.target.name === "weight") {
-                            s.weight = e.target.value;
+                            s.weight = Number(e.target.value);
                         } else if (e.target.name === "reps") {
-                            s.reps = e.target.value;
+                            s.reps = Number(e.target.value);
                         }
+                        s["1RM"] = calc1RM(s.weight, s.reps);
                     }
                     return s;
                 });
@@ -48,11 +51,6 @@ export default function RoutineExercise({
     };
 
     const deleteSet = setIndex => {
-        // remove set from db if already in db
-        if (exercises[index][1][setIndex].id) {
-            removeFromDb(exercises[index][1][setIndex].id);
-        }
-
         setExercises(exercises.map((el, elIndex) => {
             if (index === elIndex) {
                 el[1] = el[1].filter((s, sIndex) => {
@@ -66,7 +64,27 @@ export default function RoutineExercise({
     const addSet = () => { 
         setExercises(exercises.map((el, elIndex) => {
             if (index === elIndex) {
-                el[1] = [...el[1], { id: 0, weight: 0, reps: 0 }];
+                el[1] = [...el[1], { id: 0, weight: 0, reps: 0, completed: false }];
+            }
+            return el;
+        }));
+    };
+
+    const completeSet = setIndex => {
+        setExercises(exercises.map((el, elIndex) => {
+            if (index === elIndex) {
+                const set = el[1][setIndex];
+                set.completed = !set.completed;
+
+                if (set.completed) {
+                    if (!set.reps) {
+                        set.reps = set.placeholder.reps;
+                    }
+                    if (!set.weight && set.placeholder?.weight) {
+                        set.weight = set.placeholder.weight;
+                        set["1RM"] = calc1RM(set.weight, set.reps);
+                    }
+                }
             }
             return el;
         }));
@@ -126,30 +144,44 @@ export default function RoutineExercise({
                         </div>
                     </div>
 
-                    <div className={styles.sets}>
+                    <div className={`${styles.sets} ${workoutStyles.sets}`}>
                         <span className={styles["sets-heading"]}>Set</span>
                         <span className={styles["sets-heading"]}>kg</span>
                         <span className={styles["sets-heading"]}>Reps</span>
+                        <span></span>
                         <span></span>
 
                         {exercises[index][1].map((set, setIndex) => (
                             <React.Fragment key={setIndex}>
                                 <span>{setIndex + 1}</span>
+
                                 <input 
                                     min="0" 
                                     name="weight" 
                                     type="number" 
-                                    value={set.weight ? set.weight : ''} 
+                                    value={set.weight ? set.weight : ''}
+                                    placeholder={set?.placeholder?.weight ? set.placeholder.weight : ''} 
                                     onChange={e => handleChange(e, setIndex)} 
-                                    step=".01"
                                 />
+
                                 <input 
                                     min="1" 
                                     name="reps" 
                                     type="number" 
-                                    value={set.reps ? set.reps : ''} 
+                                    value={set.reps ? set.reps : ''}
+                                    placeholder={set?.placeholder?.reps ? set.placeholder.reps : ''} 
                                     onChange={e => handleChange(e, setIndex)} 
                                 />
+
+                                <button 
+                                    type="button"
+                                    className={set.completed ? "button button-success" : "button button tertiary"}
+                                    onClick={() => completeSet(setIndex)}
+                                    disabled={!set?.placeholder?.reps && !set.reps}
+                                >
+                                    <FontAwesomeIcon icon={faCheck} />
+                                </button>
+
                                 <button 
                                     type="button"
                                     className="button button-tertiary"
@@ -185,35 +217,39 @@ export default function RoutineExercise({
                 </>
             )}
 
-                <Modal 
-                    openModal={deleteModal} 
-                    closeModal={() => setDeleteModal(false)} 
-                    title="Delete Set?"
-                >
-                    <p>
-                        Are you sure you want to delete set with data&nbsp;
-                        {removeSet?.weight ? `${removeSet.weight}kg` : '0kg'} x {removeSet?.reps ? removeSet.reps : 0}.
-                        This process can't be undone.
-                    </p>
+            <Modal 
+                openModal={deleteModal} 
+                closeModal={() => setDeleteModal(false)} 
+                title="Delete Set?"
+            >
+                <p>
+                    Are you sure you want to delete set with data&nbsp;
+                    {removeSet?.weight ? `${removeSet.weight}kg` : '0kg'} x {removeSet?.reps ? removeSet.reps : 0}.
+                    This process can't be undone.
+                </p>
 
-                    <ModalFooter>
-                        <div className={modalStyles["button-container"]}>
-                            <button type="button" onClick={() => setDeleteModal(false)} className="button button-tertiary">
-                                Cancel
-                            </button>
-                            <button
-                                type="button" 
-                                className="button button-danger" 
-                                onClick={() => {
-                                    deleteSet(removeSet.index);
-                                    setDeleteModal(false);
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </ModalFooter>
-                </Modal>
+                <ModalFooter>
+                    <div className={modalStyles["button-container"]}>
+                        <button 
+                            type="button" 
+                            onClick={() => setDeleteModal(false)} 
+                            className="button button-tertiary"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="button"
+                            className="button button-danger" 
+                            onClick={() => {
+                                deleteSet(removeSet.index);
+                                setDeleteModal(false);
+                            }}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </ModalFooter>
+            </Modal>
         </div>
     );
 }

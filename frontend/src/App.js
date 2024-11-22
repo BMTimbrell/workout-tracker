@@ -6,6 +6,7 @@ import Login from './components/Login/Login';
 import Logout from './components/Login/Logout';
 import Register from './components/Register/Register';
 import Exercises from './components/Exercises/Exercises';
+import History from './components/History/History';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="profile" element={<Profile />} />
           <Route path="exercises" element={<Exercises />} />
+          <Route path="history" element={<History />} />
           <Route path="register" element={<Register />} />
           <Route path="login" element={<Login />} />
           <Route path="logout" element={<Logout />} />

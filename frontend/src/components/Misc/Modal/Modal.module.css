@@ -1,5 +1,5 @@
 .modal {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   translate: -50% -50%;
@@ -17,7 +17,7 @@
 .modal-header {
   background-color: var(--primary);
   color: white;
-  padding: 0.5rem 0.5rem;
+  padding: 0.75rem;
   display: flex;
   justify-content: space-between;
   column-gap: 1rem;
@@ -32,6 +32,10 @@
 .modal-content {
   max-height: calc(100dvh - 12.5rem);
   overflow-y: auto;
+}
+
+.modal-content > p {
+  padding: 1rem;
 }
 
 .modal-close {
@@ -64,15 +68,21 @@
 }
 
 .button-container {
+  display: grid;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.button-container2 {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
 }
 
-.button-container > * {
+.button-container2 > * {
   flex: 1 1 0;
-  min-width: 2.25em;
+  min-width: 0;
   white-space: nowrap;
 }
 
@@ -85,5 +95,13 @@
   100% {
     opacity: 1;
     top: 50%;
+  }
+}
+
+@media (min-width: 28.125em) {
+  .button-container {
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    width: auto;
   }
 }

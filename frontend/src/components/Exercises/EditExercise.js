@@ -1,5 +1,6 @@
 import ModalFooter from '../Misc/Modal/ModalFooter';
 import Modal from '../Misc/Modal/Modal';
+import modalStyles from '../Misc/Modal/Modal.module.css';
 import styles from './Exercises.module.css';
 import Select from '../Misc/Select/Select';
 import Error from '../Misc/Error/Error';
@@ -121,7 +122,7 @@ export default function EditExercise({ formData, setFormData, closeModal, bodypa
                     <FontAwesomeIcon icon={faTrashCan} />
                     <span>Delete</span>
                 </button>
-                <div className={styles["button-container"]}>
+                <div className={modalStyles["button-container2"]}>
                     <button onClick={closeModal} className="button button-tertiary">Cancel</button>
                     <button 
                         type="submit" 
@@ -139,7 +140,7 @@ export default function EditExercise({ formData, setFormData, closeModal, bodypa
                 closeModal={() => setDeleteModal(false)} 
                 title="Delete Exercise?"
             >
-                <p style={{padding: "1rem"}}>Are you sure you want to delete "{formData.name}"? This process can't be undone.</p>
+                <p>Are you sure you want to delete "{formData.name}"? This process can't be undone.</p>
                 {deleteError && <Error style={errorStyles["margin"]} text="Failed to remove exercise from database"  />}
                 <ModalFooter>
                     <div className={styles["button-container"]}>

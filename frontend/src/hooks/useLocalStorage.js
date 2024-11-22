@@ -6,7 +6,6 @@ export default function useLocalStorage(key, initialValue = undefined) {
             const item = localStorage.getItem(key);
             return item ? JSON.parse(item) : initialValue;
         } catch (error) {
-            console.log(error);
             return initialValue;
         }
     });
@@ -21,5 +20,5 @@ export default function useLocalStorage(key, initialValue = undefined) {
         localStorage.removeItem(key);
     };
 
-    return { value, setValue, removeValue };
+    return [value, setValue, removeValue];
 }

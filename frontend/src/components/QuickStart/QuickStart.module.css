@@ -1,0 +1,8 @@
+.container {
+    margin: 3rem auto;
+    max-width: 10rem;
+}
+
+.container > h2 {
+    margin-bottom: 2rem;
+}

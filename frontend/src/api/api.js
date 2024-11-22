@@ -309,3 +309,27 @@ export const editRoutine = async (userId, routineId, name, exercises, setsToDele
         return null;
     }
 };
+
+export const addWorkout = async (id, name, exercises, time) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${id}/workouts`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name,
+                exercises,
+                time
+            }),
+            credentials: "include"
+        });
+        
+        if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
+
+        return null;
+    } catch (error) {
+        return null;
+    }
+};

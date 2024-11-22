@@ -22,7 +22,7 @@
     display: grid;
     grid-template-columns: 1fr 2fr 2fr 1fr;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.5rem;
     margin-top: 1rem;
 }
 
@@ -47,6 +47,6 @@
     border: var(--light-border);
     border-radius: 0.25em;
     padding: 0.25em 0.5em;
-    max-width: 100px;
+    max-width: min(6.25em, 100%);
     justify-self: center;
 }

@@ -7,6 +7,8 @@
   --warning: #ffcc00;
   --light-border: 1px solid#bbbbbb;
   --link-color: rgb(21, 56, 255);
+  --form-max-width: 31.25rem;
+  --form-padding: 2rem;
 }
 
 *, *::before, *::after {
@@ -143,8 +145,8 @@ input {
 }
 
 .form {
-  max-width: 500px;
-  padding: 2rem;
+  max-width: var(--form-max-width);
+  padding: var(--form-padding);
   background-color: white;
   border-radius: 0.25rem;
   border: 1px solid rgba(0, 0, 0, 0.2);

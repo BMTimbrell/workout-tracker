@@ -1,16 +1,14 @@
-import Error from '../Misc/Error/Error';
-import errorStyles from '../Misc/Error/Error.module.css';
 import Modal from '../Misc/Modal/Modal';
 import ModalFooter from '../Misc/Modal/ModalFooter';
 import { useState } from 'react';
 import Exercises from '../Exercises/Exercises';
 import modalStyles from '../Misc/Modal/Modal.module.css';
-import styles from './RoutineForm.module.css';
-import RoutineExercise from './RoutineExercise';
+import styles from '../Routines/RoutineForm.module.css';
+import WorkoutExercise from './WorkoutExercise';
 import Tabs from '../Misc/Tabs/Tabs';
 import ExerciseInfo from '../Exercises/ExerciseInfo';
 
-export default function RoutineForm({ handleSubmit, formData, setFormData, error, isEdit = false }) {
+export default function WorkoutForm({ handleSubmit, formData, setFormData }) {
 
     const [exerciseModal, setExerciseModal] = useState(false);
     const [exercises, setExercises] = useState([]);
@@ -28,13 +26,6 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
 
     const [deleteModal, setDeleteModal] = useState(false);
     const [exerciseToRemove, setExerciseToRemove] = useState(null);
-
-    const handleChange = e => {
-        setFormData(prev => ({
-            ...prev,
-            name: e.target.value
-        }));
-    };
 
     const addExercises = exercises => {
         setExercises(prev => [...prev, exercises]);
@@ -58,17 +49,6 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
     };
 
     const replaceExercise = exercises => {
-        if (isEdit) {
-            formData.exercises[indexToReplace][1].forEach(set => {
-                if (set.id) {
-                    setFormData(prev => ({
-                        ...prev,
-                        setsToDelete: [...prev.setsToDelete, set.id]
-                    }))
-                }
-            });
-        }
-
         setFormData(prev => ({
             ...prev,
             exercises: [
@@ -84,17 +64,6 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
     };
 
     const deleteFormExercise = () => {
-        if (isEdit) {
-            formData.exercises[exerciseToRemove.index][1].forEach(set => {
-                if (set.id) {
-                    setFormData(prev => ({
-                        ...prev,
-                        setsToDelete: [...prev.setsToDelete, set.id]
-                    }))
-                }
-            });
-        }
-
         setFormData(prev => ({
             ...prev,
             exercises: prev.exercises.filter((exercise, index) => {
@@ -106,22 +75,11 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
 
     return (
         <>
-            <form id={isEdit ? "editRoutineForm" : "addRoutineForm"} className="form" onSubmit={handleSubmit}>
+            <form id="addWorkoutForm" className="form" onSubmit={handleSubmit}>
                 <div className="input-container">
-                    <div className="floating-input">
-                        <input 
-                            id="name"
-                            type="text"
-                            onChange={handleChange} 
-                            placeholder=" "
-                            value={formData.name} 
-                            required 
-                        />
-                        <label htmlFor="name">Routine Name</label>
-                    </div>
 
                     {formData.exercises.map((exercise, index) => (
-                        <RoutineExercise 
+                        <WorkoutExercise 
                             key={index} 
                             id={exercise[0]} 
                             index={index} 
@@ -145,10 +103,6 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                                 setReplaceModal(true);
                             }}
                             openDeleteModal={ex => openDeleteModal(ex)}
-                            removeFromDb={(setId) => setFormData(prev => ({
-                                ...prev,
-                                setsToDelete: [...prev.setsToDelete, setId]
-                            }))}
                             setInfo={info => {
                                 setInfoExercise(prev => ({
                                     ...prev,
@@ -163,7 +117,6 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
 
                     <button type="button" onClick={() => setExerciseModal(true)} className="button button-secondary">Add Exercises</button>
 
-                    {error && <Error style={errorStyles['form-error']} text="Submission failed" />}
                 </div>
             </form>
             
@@ -264,7 +217,7 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                 closeModal={() => setDeleteModal(false)} 
                 title="Delete Routine?"
             >
-                <p>Are you sure you want to delete "{exerciseToRemove?.name}" and all of its sets from this routine? This process can't be undone.</p>
+                <p>Are you sure you want to delete "{exerciseToRemove?.name}" and all of its sets from this workout? This process can't be undone.</p>
 
                 <ModalFooter>
                     <div className={modalStyles["button-container"]}>

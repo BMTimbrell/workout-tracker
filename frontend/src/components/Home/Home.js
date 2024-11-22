@@ -2,10 +2,13 @@ import { useUserContext } from '../../hooks/UserContext';
 import { Link } from 'react-router-dom';
 import Routines from '../Routines/Routines';
 import styles from './Home.module.css';
+import QuickStart from '../QuickStart/QuickStart';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import Workout from '../Workout/Workout';
 
 export default function Home() {
     const { user } = useUserContext();
-
+    const [workout, setWorkout, removeWorkout] = useLocalStorage('workout');
 
     if (!user) return (
         <>
@@ -20,8 +23,9 @@ export default function Home() {
     return (
         <>
             <h1>Start Workout</h1>
-
-            <Routines />
+            {workout && <Workout workout={workout} setWorkout={setWorkout} removeWorkout={removeWorkout} />}
+            <QuickStart workout={workout} setWorkout={setWorkout} />
+            <Routines workout={workout} setWorkout={setWorkout} />
         </>
     );
 }

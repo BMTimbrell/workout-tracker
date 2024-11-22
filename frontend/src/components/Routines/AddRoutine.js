@@ -49,7 +49,7 @@ export default function AddRoutine({ closeModal, setFooter, updateRoutines, onCl
                         className="button button-tertiary" 
                         onClick={() => closeModal()}
                     >
-                        Close
+                        Cancel
                     </button>
                     <button 
                         form="addRoutineForm" 

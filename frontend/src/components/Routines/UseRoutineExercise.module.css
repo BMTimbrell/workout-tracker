@@ -1,0 +1,13 @@
+.container {
+    margin-bottom: 1rem;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.list > li:nth-child(2) {
+    color: rgba(0, 0, 0, 0.7);
+}

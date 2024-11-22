@@ -18,7 +18,7 @@ export default function Logout() {
                 removeUser();
                 navigate('/login');
             });
-    }, [navigate]);
+    }, [navigate, removeUser]);
 
     return <LoadingSpinner />
 

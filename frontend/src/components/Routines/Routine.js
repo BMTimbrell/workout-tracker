@@ -2,7 +2,21 @@ import styles from './Routines.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 
-export default function Routine({ routine, openModal, setSelectedRoutine }) {
+export default function Routine({ routine, openModal, setSelectedRoutine, openWorkoutModal }) {
+
+    const useRoutine = () => {
+        openWorkoutModal();
+        setSelectedRoutine(prev => ({
+            ...prev,
+            id: routine.id,
+            name: routine.name,
+            exercises: routine.exercises[0] ? routine.exercises.map(exercise => {
+                return [exercise.id, exercise.sets]
+            }) : [],
+            setsToDelete: []
+        }));
+    };
+
     return (
         <div className={styles.routine}>
             <div className={styles["routine-heading-container"]}>
@@ -32,7 +46,12 @@ export default function Routine({ routine, openModal, setSelectedRoutine }) {
                     ))}
                 </ul>
             }
-            <button className="button button-primary">Use Routine</button>
+            <button 
+                className="button button-primary" 
+                onClick={useRoutine}
+            >
+                Use Routine
+            </button>
         </div>
     );
 }
