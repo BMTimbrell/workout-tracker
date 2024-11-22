@@ -230,7 +230,25 @@ const getExerciseNameById = async (req, res) => {
 
     try {
         const exercise = await pool.query(
-            'SELECT exercises.id, exercises.name '
+            'SELECT exercises.id, exercises.user_id, exercises.name '
+            + 'FROM exercises '
+            + 'WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND exercises.id = $2 ', [userId, exerciseId]
+        );
+
+        return res.status(200).json(exercise.rows[0]);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
+const getExerciseNameBodypartById = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const exerciseId = parseInt(req.params.exerciseId);
+
+    try {
+        const exercise = await pool.query(
+            'SELECT exercises.id, exercises.user_id, exercises.name, exercises.bodypart '
             + 'FROM exercises '
             + 'WHERE (exercises.user_id IS NULL OR exercises.user_id = $1) AND exercises.id = $2 ', [userId, exerciseId]
         );
@@ -347,7 +365,7 @@ const addRoutine = async (req, res) => {
                 for (const set of exercise[1]) {
                     try {
                         const result = await pool.query('INSERT INTO routine_sets (weight, reps) VALUES ($1, $2) RETURNING id', 
-                            [!isNaN(set.weight) ? Number(set.weight) : 0, !isNaN(set.reps) ? Number(set.reps) : 0]);
+                            [!isNaN(set.weight) ? Number(set.weight) : 0, !isNaN(set.reps) ? parseInt(set.reps) : 0]);
                         const setId = result.rows[0].id;
     
                         await pool.query('INSERT INTO routines_exercises (routine_id, exercise_id, exercise_order, set_id) VALUES ($1, $2, $3, $4)', 
@@ -388,10 +406,10 @@ const updateRoutine = async (req, res) => {
             for (const set of exercise[1]) {
                 if (set.id) {
                     await pool.query('UPDATE routine_sets SET weight = $1, reps = $2 WHERE id = $3', 
-                        [!isNaN(set.weight) ? Number(set.weight) : 0, !isNaN(set.reps) ? Number(set.reps) : 0, set.id]);
+                        [!isNaN(set.weight) ? Number(set.weight) : 0, !isNaN(set.reps) ? parseInt(set.reps) : 0, set.id]);
                 } else {
                     const result = await pool.query('INSERT INTO routine_sets (weight, reps) VALUES ($1, $2) RETURNING id', 
-                            [!isNaN(set.weight) ? Number(set.weight) : 0, !isNaN(set.reps) ? Number(set.reps) : 0]);
+                            [!isNaN(set.weight) ? Number(set.weight) : 0, !isNaN(set.reps) ? parseInt(set.reps) : 0]);
 
                     set.id = result.rows[0].id;
                 }
@@ -432,6 +450,70 @@ const deleteRoutine = async (req, res) => {
     }
 };
 
+const addWorkout = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const { name, time } = req.body;
+    let { exercises } = req.body;
+
+    const bestSetIndexes = [];
+
+    exercises.forEach((exercise) => {
+        let bestSetIndex = 0;
+        const sets = exercise[1];
+
+        sets.forEach((set, index) => {
+            if (Number(set["1RM"]) > Number(sets[bestSetIndex]["1RM"])) {
+                bestSetIndex = index;
+            }
+        });
+
+        bestSetIndexes.push(bestSetIndex);
+    });
+
+    exercises = exercises.map((exercise, index) => {
+        exercise[1][bestSetIndexes[index]].bestSet = true;
+        return exercise;
+    });
+
+    try {
+
+        const result = await pool.query('INSERT INTO workouts (user_id, name, date, duration) VALUES ($1, $2, $3, $4) RETURNING id', 
+            [userId, name, time.start, time.duration]);
+        const workoutId = result.rows[0].id;
+        
+        if (workoutId) {
+            for (const [index, exercise] of exercises.entries()) {
+                for (const set of exercise[1]) {
+                    try {
+                        const result = await pool.query(
+                            'INSERT INTO workout_sets (weight, reps, one_rep_max, best_set) VALUES ($1, $2, $3, $4) RETURNING id', 
+                            [
+                                !isNaN(set.weight) ? Number(set.weight) : 0, 
+                                !isNaN(set.reps) ? parseInt(set.reps) : 0, 
+                                Math.round(Number(set["1RM"])), 
+                                set?.bestSet ? set.bestSet : false
+                            ]
+                        );
+
+                        const setId = result.rows[0].id;
+    
+                        await pool.query('INSERT INTO workouts_exercises (workout_id, exercise_id, exercise_order, set_id) VALUES ($1, $2, $3, $4)', 
+                        [workoutId, Number(exercise[0]), index, setId]);
+                    } catch (error) {
+                        console.log(error);
+                        return res.status(500).json({error});
+                    }
+                }
+            }
+        }
+
+        return res.status(201).json({message: 'workout added'});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
 
 module.exports = {
     checkUserAuthorised,
@@ -444,11 +526,13 @@ module.exports = {
     searchExercises,
     getExerciseById,
     getExerciseNameById,
+    getExerciseNameBodypartById,
     addExercise,
     updateExercise,
     deleteExercise,
     getRoutines,
     addRoutine,
     updateRoutine,
-    deleteRoutine
+    deleteRoutine,
+    addWorkout
 };
