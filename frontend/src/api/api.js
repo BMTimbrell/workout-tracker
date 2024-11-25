@@ -217,6 +217,42 @@ export const deleteExercise = async (userId, exerciseId) => {
     }
 };
 
+export const getNumberRoutinesByExercise = async (userId, exerciseId) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${userId}/exercises/${exerciseId}/routines`, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+        });
+        
+        if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
+
+        return null;
+    } catch (error) {
+        return null
+    }
+};
+
+export const getNumberWorkoutsByExercise = async (userId, exerciseId) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${userId}/exercises/${exerciseId}/workouts`, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+        });
+        
+        if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
+
+        return null;
+    } catch (error) {
+        return null
+    }
+};
+
 export const getRoutines = async (id, controller) => {
     try {
         const response = await fetch(`${baseUrl}/users/${id}/routines`, {
@@ -307,6 +343,29 @@ export const editRoutine = async (userId, routineId, name, exercises, setsToDele
     } catch (error) {
         console.log(error);
         return null;
+    }
+};
+
+export const getWorkouts = async (id, controller) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${id}/workouts`, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            signal: controller.signal
+        });
+        
+        if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
+
+        return null;
+    } catch (error) {
+        if (!controller.signal.aborted) {
+            return null;   
+        } else {
+            return { abortError: true };
+        }
     }
 };
 

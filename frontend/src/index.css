@@ -197,3 +197,18 @@ input {
   background-color: inherit;
   padding: 0 0.25rem;
 }
+
+.react-datepicker__input-container input {
+    padding: 0.5em;
+    border-radius: 0.25em;
+    border: var(--light-border);
+    width: 100%;
+}
+
+.react-datepicker__close-icon::after {
+  background-color: #888 !important;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}

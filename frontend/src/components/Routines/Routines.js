@@ -95,12 +95,11 @@ export default function Routines({ workout, setWorkout }) {
                 <button className="button button-primary" onClick={() => setAddModal(true)}>
                     <FontAwesomeIcon icon={faPlus} /> 
                 </button>
-
             </div>
 
             {loading ? <LoadingSpinner /> : error ? <Error text="Failed to load data" /> : undefined}
 
-            {routines?.length === 0 ? <p className={styles["new-routine"]}>You currently have no routines - 
+            {routines?.length === 0 && !loading && !error ? <p className={styles["new-routine"]}>You currently have no routines -&nbsp;
                 <button className="link-button" onClick={() => setAddModal(true)}>
                     Click here
                 </button> to add a new routine.</p> : (

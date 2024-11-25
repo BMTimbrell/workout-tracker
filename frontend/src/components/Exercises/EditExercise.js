@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { useUserContext } from '../../hooks/UserContext';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { editExercise, deleteExercise } from '../../api/api';
+import { editExercise, deleteExercise, getNumberRoutinesByExercise, getNumberWorkoutsByExercise } from '../../api/api';
 import { useNavigate } from 'react-router-dom';
 
 export default function EditExercise({ formData, setFormData, closeModal, bodyparts, updateExercises }) {
@@ -17,7 +17,7 @@ export default function EditExercise({ formData, setFormData, closeModal, bodypa
     const [submitting, setSubmitting] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [error, setError] = useState(false);
-    const [deleteError, setDeleteError] = useState(false);
+    const [deleteError, setDeleteError] = useState('');
     const [deleteModal, setDeleteModal] = useState(false);
     const navigate = useNavigate();
 
@@ -55,18 +55,47 @@ export default function EditExercise({ formData, setFormData, closeModal, bodypa
 
     const handleDelete = async () => {
         setDeleting(true);
-        const response = await deleteExercise(user?.id, formData.id);
+
+        const routineResponse = await getNumberRoutinesByExercise(user?.id, formData.id);
+        const workoutResponse = await getNumberWorkoutsByExercise(user?.id, formData.id);
+
+        console.log(routineResponse?.count, workoutResponse?.count);
         
-        if (response?.authorisationFailed) {
+        if (routineResponse?.authorisationFailed || workoutResponse?.authorisationFailed) {
             navigate('/logout');
-        } else if (response) {
+        } else if (routineResponse?.count > 0 || workoutResponse?.count > 0) {
+            const rCount = parseInt(routineResponse?.count);
+            const wCount = parseInt(workoutResponse?.count);
+
+            const routinesText = !rCount ? '' : rCount > 1 ? `${rCount} routines` : `${rCount} routine`
+            const workoutsText = !wCount ? '' : wCount > 1 ? `${wCount} workouts` : `${wCount} workout`
+            const andText = routinesText && workoutsText ? ' and ' : '';
+
+            const entriesText = (wCount && rCount) || (rCount > 1 || wCount > 1) ? 'these entries' : 'this entry';
+
+            setDeleteError(
+                `You have ${routinesText}${andText}${workoutsText} containing this exercise. You must remove ${entriesText} before you can delete this exercise.`
+            );
+            setDeleting(false);
+            return;
+        } else if (!routineResponse || !workoutResponse) {
+            setDeleting(false);
+            setDeleteError('Failed to delete exercise.');
+            return;
+        }
+
+        const deleteResponse = await deleteExercise(user?.id, formData.id);
+        
+        if (deleteResponse?.authorisationFailed) {
+            navigate('/logout');
+        } else if (deleteResponse) {
             setError(false);
-            setDeleteError(false);
+            setDeleteError('');
             updateExercises();
             setDeleteModal(false);
             closeModal();
         } else {
-            setDeleteError(true);
+            setDeleteError('Failed to delete exercise.');
         }
 
         setDeleting(false);
@@ -141,7 +170,7 @@ export default function EditExercise({ formData, setFormData, closeModal, bodypa
                 title="Delete Exercise?"
             >
                 <p>Are you sure you want to delete "{formData.name}"? This process can't be undone.</p>
-                {deleteError && <Error style={errorStyles["margin"]} text="Failed to remove exercise from database"  />}
+                {deleteError && <Error style={errorStyles["margin"]} text={deleteError}  />}
                 <ModalFooter>
                     <div className={styles["button-container"]}>
                         <button onClick={() => setDeleteModal(false)} className="button button-tertiary">Cancel</button>

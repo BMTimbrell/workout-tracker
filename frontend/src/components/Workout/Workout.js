@@ -195,7 +195,7 @@ export default function Workout({ workout, setWorkout, removeWorkout }) {
                             onClick={confirmSubmit}
                             disabled={submitting}
                         >
-                            Finish
+                            {!submitting ? 'Finish' : 'Saving...'}
                         </button>
                     </div>
                 </ModalFooter>

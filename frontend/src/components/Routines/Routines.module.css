@@ -15,6 +15,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
     justify-content: center;
+    justify-items: center;
     gap: 1rem;
 }
 
@@ -27,6 +28,7 @@
     flex-direction: column;
     row-gap: 1rem;
     justify-content: space-between;
+    width: 100%;
 }
 
 .routine h3 {

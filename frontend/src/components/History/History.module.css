@@ -1,0 +1,13 @@
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18.75rem, 1fr));
+    justify-content: center;
+    justify-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.date-picker-container {
+    margin-inline: auto;
+    max-width: 15.625rem;
+}

@@ -1,0 +1,78 @@
+.container {
+    border: var(--light-border);
+    border-radius: 0.25rem;
+    background-color: white;
+    --container-padding: 1rem;
+    padding: var(--container-padding);
+    position: relative;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.header h2 {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 1.25rem;
+}
+
+.button-container {
+    display: flex;
+    column-gap: 0.5rem;
+    align-items: center;
+}
+
+.button-container > * {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.exercises {
+    display: grid;
+    grid-template-columns: minmax(3.125rem, 12.5rem) 6.25rem;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.exercises > * {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.exercises > *:nth-child(even) {
+    text-align: right;
+}
+
+.exercise-heading {
+    font-weight: bold;
+}
+
+.time {
+    display: flex;
+    align-items: center;
+    column-gap: 0.25rem;
+}
+
+.footer {
+    color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    gap: 1rem;
+    position: absolute;
+    justify-content: space-between;
+    bottom: var(--container-padding);
+    left: var(--container-padding);
+    right: var(--container-padding);
+}
+
+.footer * {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

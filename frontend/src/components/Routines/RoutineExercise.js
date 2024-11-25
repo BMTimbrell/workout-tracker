@@ -127,14 +127,14 @@ export default function RoutineExercise({
                     </div>
 
                     <div className={styles.sets}>
-                        <span className={styles["sets-heading"]}>Set</span>
-                        <span className={styles["sets-heading"]}>kg</span>
-                        <span className={styles["sets-heading"]}>Reps</span>
-                        <span></span>
+                        <div className={styles["sets-heading"]}>Set</div>
+                        <div className={styles["sets-heading"]}>kg</div>
+                        <div className={styles["sets-heading"]}>Reps</div>
+                        <div></div>
 
                         {exercises[index][1].map((set, setIndex) => (
                             <React.Fragment key={setIndex}>
-                                <span>{setIndex + 1}</span>
+                                <div>{setIndex + 1}</div>
                                 <input 
                                     min="0" 
                                     name="weight" 
