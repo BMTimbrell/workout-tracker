@@ -328,7 +328,7 @@ const getRoutines = async (req, res) => {
         if (routines.rows.length > 0) {
             routines.rows = routines.rows.map(routine => {
                 if (routine.exercises[0]) {
-                    routine.exericses = routine.exercises.map(exercise => {
+                    routine.exercises = routine.exercises.map(exercise => {
                         delete exercise["routine_id"];
                         delete exercise["exercise_order"];
                         return exercise;
@@ -450,6 +450,48 @@ const deleteRoutine = async (req, res) => {
     }
 };
 
+const getWorkouts = async (req, res) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        const workouts = await pool.query(
+            'WITH exercise_list AS ('
+                +'SELECT workouts_exercises.workout_id, exercises.id, exercises.name, array_agg(sets ORDER BY sets.id) AS sets, workouts_exercises.exercise_order '
+                +'FROM workouts_exercises '
+                +'JOIN exercises ON workouts_exercises.exercise_id = exercises.id '
+                +'JOIN ('
+                +    'SELECT workout_sets.id, workout_sets.weight, workout_sets.reps, workout_sets.one_rep_max, workout_sets.best_set '
+                +    'FROM workout_sets ORDER BY workout_sets.id'
+                +  ') sets ON sets.id = workouts_exercises.set_id '
+                +'GROUP BY workouts_exercises.exercise_order, workouts_exercises.workout_id, exercises.id '
+              +')'
+              +'SELECT workouts.id, workouts.name, workouts.date, workouts.duration, json_agg(exercise_list ORDER BY exercise_list.exercise_order) AS exercises '
+              +'FROM workouts '
+              +'LEFT JOIN exercise_list ON exercise_list.workout_id = workouts.id '
+              +'WHERE workouts.user_id = $1 '
+              +'GROUP BY workouts.id', [id]
+        );
+
+        if (workouts.rows.length > 0) {
+            workouts.rows = workouts.rows.map(workout => {
+                if (workout.exercises[0]) {
+                    workout.exercises = workout.exercises.map(exercise => {
+                        delete exercise["workout_id"];
+                        delete exercise["exercise_order"];
+                        return exercise;
+                    });
+                }
+                return workout;
+            });
+        }
+        console.log(workouts.rows);
+        return res.status(200).json({workouts: workouts.rows});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
 const addWorkout = async (req, res) => {
     const userId = parseInt(req.params.id);
     const { name, time } = req.body;
@@ -514,6 +556,46 @@ const addWorkout = async (req, res) => {
     }
 };
 
+const getNumberRoutinesByExercise = async (req, res) => {
+    const exerciseId = parseInt(req.params.exerciseId);
+
+    try {
+        const routines = await pool.query(
+            'WITH routine_list AS ('
+            +'SELECT COUNT(routine_id) '
+            +'FROM routines_exercises '
+            +'WHERE exercise_id = $1 '
+            +'GROUP BY routine_id'
+          +')'
+          +'SELECT COUNT(*) FROM routine_list', [exerciseId]
+        );
+
+        return res.status(200).json({count: routines.rows[0].count});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
+const getNumberWorkoutsByExercise = async (req, res) => {
+    const exerciseId = parseInt(req.params.exerciseId);
+
+    try {
+        const workouts = await pool.query(
+            'WITH workout_list AS ('
+            +'SELECT COUNT(workout_id) '
+            +'FROM workouts_exercises '
+            +'WHERE exercise_id = $1 '
+            +'GROUP BY workout_id'
+          +')'
+          +'SELECT COUNT(*) FROM workout_list', [exerciseId]
+        );
+
+        return res.status(200).json({count: workouts.rows[0].count});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
 
 module.exports = {
     checkUserAuthorised,
@@ -534,5 +616,8 @@ module.exports = {
     addRoutine,
     updateRoutine,
     deleteRoutine,
-    addWorkout
+    addWorkout,
+    getWorkouts,
+    getNumberRoutinesByExercise,
+    getNumberWorkoutsByExercise
 };
