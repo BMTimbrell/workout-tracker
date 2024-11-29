@@ -88,12 +88,22 @@
 }
 
 .input-container {
+    --padding: 0.5rem;
+    position: sticky;
+    top: calc(var(--header-height) + var(--padding));
+    padding-block: var(--padding);
+    background-color: var(--bg-color);
     margin-block: 2em;
     display: flex;
     width: 100%;
     align-items: center;
     justify-content: center;
     gap: 1rem;
+}
+
+dialog .input-container {
+    top: 0;
+    background-color: white;
 }
 
 @media (max-width: 26.25em) {

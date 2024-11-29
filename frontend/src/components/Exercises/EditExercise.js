@@ -58,8 +58,6 @@ export default function EditExercise({ formData, setFormData, closeModal, bodypa
 
         const routineResponse = await getNumberRoutinesByExercise(user?.id, formData.id);
         const workoutResponse = await getNumberWorkoutsByExercise(user?.id, formData.id);
-
-        console.log(routineResponse?.count, workoutResponse?.count);
         
         if (routineResponse?.authorisationFailed || workoutResponse?.authorisationFailed) {
             navigate('/logout');

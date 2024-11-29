@@ -1,3 +1,5 @@
+import { convertToKg } from "../utils/utils";
+
 const baseUrl = 'http://localhost:3001';
 
 export const registerUser = async (name, email, password) => {
@@ -276,7 +278,17 @@ export const getRoutines = async (id, controller) => {
     }
 };
 
-export const addRoutine = async (id, name, exercises) => {
+export const addRoutine = async (id, name, exercises, units) => {
+    if (units === "lbs") {
+        exercises.map(exercise => {
+            exercise[1] = exercise[1].map(set => {
+                set.weight = convertToKg(set.weight);
+                return set;
+            });
+            return exercise;
+        });
+    }
+
     try {
         const response = await fetch(`${baseUrl}/users/${id}/routines`, {
             method: 'POST',
@@ -320,7 +332,19 @@ export const deleteRoutine = async (userId, routineId) => {
     }
 };
 
-export const editRoutine = async (userId, routineId, name, exercises, setsToDelete) => {
+export const editRoutine = async (userId, routineId, name, exercises, setsToDelete, units) => {
+
+    if (units === "lbs") {
+        exercises = exercises.map(exercise => {
+            exercise[1] = exercise[1].map(set => {
+                set.weight = convertToKg(set.weight);
+                return set;
+            });
+            return exercise;
+        });
+    }
+
+
     try {
         const response = await fetch(`${baseUrl}/users/${userId}/routines/${routineId}`, {
             method: 'PUT',
@@ -369,7 +393,18 @@ export const getWorkouts = async (id, controller) => {
     }
 };
 
-export const addWorkout = async (id, name, exercises, time) => {
+export const addWorkout = async (id, name, exercises, time, units) => {
+    if (units === "lbs") {
+        exercises = exercises.map(exercise => {
+            exercise[1] = exercise[1].map(set => {
+                set.weight = convertToKg(set.weight);
+                set["1RM"]= convertToKg(set["1RM"]);
+                return set;
+            });
+            return exercise;
+        });
+    }
+
     try {
         const response = await fetch(`${baseUrl}/users/${id}/workouts`, {
             method: 'POST',
@@ -389,6 +424,65 @@ export const addWorkout = async (id, name, exercises, time) => {
 
         return null;
     } catch (error) {
+        return null;
+    }
+};
+
+export const editWorkout = async (userId, workoutId, name, exercises, setsToDelete, unit) => {
+
+    if (unit === "lbs") {
+        exercises = exercises.map(exercise => {
+            exercise[1] = exercise[1].map(set => {
+                set.weight = convertToKg(set.weight);
+                return set;
+            });
+            return exercise;
+        });
+    }
+
+
+    try {
+        const response = await fetch(`${baseUrl}/users/${userId}/workouts/${workoutId}`, {
+            method: 'PUT',
+            credentials: "include",
+            body: JSON.stringify({
+                name,
+                exercises,
+                setsToDelete
+            }),
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+
+        if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
+        
+        return null;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
+
+export const deleteWorkout = async (userId, workoutId) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${userId}/workouts/${workoutId}`, {
+            method: 'DELETE',
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+
+        if (response.ok) return response.json();
+        if (response.status === 401) return { authorisationFailed: true };
+        
+        return null;
+    } catch (error) {
+        console.log(error);
         return null;
     }
 };

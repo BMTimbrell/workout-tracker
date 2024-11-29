@@ -40,6 +40,12 @@ export default function Workout({ workout, setWorkout, removeWorkout }) {
         }
     }, [editingName, nameRef]);
 
+    useEffect(() => {
+        if (finishModal === false) {
+            setError(false);
+        }
+    }, [finishModal]);
+
     const formatTime = () => {
         const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
         const minutes = String(Math.floor(elapsedTime / (1000 * 60) % 60)).padStart(2, "0");
@@ -82,7 +88,9 @@ export default function Workout({ workout, setWorkout, removeWorkout }) {
     const confirmSubmit = async () => {
         setSubmitting(true);
 
-        const exerciseData = workout.exercises.map(exercise => {
+        let exerciseData = JSON.parse(JSON.stringify(workout));
+
+        exerciseData = exerciseData.exercises.map(exercise => {
             exercise[1] = exercise[1].filter(set => set.reps);
             return exercise;
         }).filter(exercise => exercise[1].length);
@@ -94,7 +102,8 @@ export default function Workout({ workout, setWorkout, removeWorkout }) {
             { 
                 start: new Date(workout.startTime).toISOString(), 
                 duration: formatTime() 
-            }
+            },
+            user?.units === "lbs" ? "lbs" : "kg"
         );
 
         if (response?.authorizationFailed) {

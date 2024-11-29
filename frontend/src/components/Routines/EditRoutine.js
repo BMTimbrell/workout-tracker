@@ -1,6 +1,7 @@
 import ModalFooter from '../Misc/Modal/ModalFooter';
 import { useState, useEffect, useRef } from 'react';
 import { useUserContext } from '../../hooks/UserContext';
+import { useUnitContext } from '../../hooks/UnitContext';
 import RoutineForm from './RoutineForm';
 import modalStyles from '../Misc/Modal/Modal.module.css';
 import { editRoutine } from '../../api/api';
@@ -14,6 +15,7 @@ import { deleteRoutine } from '../../api/api';
 
 export default function EditRoutine({ closeModal, setFooter, updateRoutines, formData, setFormData, onClose }) {
     const { user } = useUserContext();
+    const [unit] = useUnitContext();
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -27,8 +29,15 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
         e.preventDefault();
 
         setSubmitting(true);
-        
-        const response = await editRoutine(user?.id, formData.id, formData.name, formData.exercises, formData.setsToDelete);
+
+        const response = await editRoutine(
+            user?.id, 
+            formData.id, 
+            formData.name, 
+            [...JSON.parse(JSON.stringify(formData)).exercises], 
+            formData.setsToDelete,
+            unit?.units
+        );
         
         if (response) {
             setError(false);

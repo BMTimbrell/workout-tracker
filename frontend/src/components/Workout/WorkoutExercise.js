@@ -1,5 +1,6 @@
 import useFetch from '../../hooks/useFetch';
 import { useUserContext } from '../../hooks/UserContext';
+import { useUnitContext } from '../../hooks/UnitContext';
 import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
 import Error from '../Misc/Error/Error';
 import styles from '../Routines/RoutineExercise.module.css';
@@ -25,6 +26,7 @@ export default function WorkoutExercise({
     setInfo
  }) {
     const { user } = useUserContext();
+    const [unit] = useUnitContext();
     const [exercise, loading, error]  = useFetch(user && id && `/users/${user?.id}/exercises/${id}/name`);
 
     const [deleteModal, setDeleteModal] = useState(false);
@@ -146,7 +148,7 @@ export default function WorkoutExercise({
 
                     <div className={`${styles.sets} ${workoutStyles.sets}`}>
                         <div className={styles["sets-heading"]}>Set</div>
-                        <div className={styles["sets-heading"]}>kg</div>
+                        <div className={styles["sets-heading"]}>{unit?.unit === "lbs" ? 'lbs' : 'kg'}</div>
                         <div className={styles["sets-heading"]}>Reps</div>
                         <div></div>
                         <div></div>

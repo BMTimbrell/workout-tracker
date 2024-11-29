@@ -4,6 +4,7 @@ import styles from './Routines.module.css';
 import modalStyles from '../Misc/Modal/Modal.module.css';
 import Modal from '../Misc/Modal/Modal';
 import ModalFooter from '../Misc/Modal/ModalFooter';
+import EditModal from '../Misc/Modal/EditModal';
 import { useState, useEffect, useCallback } from 'react';
 import { getRoutines } from '../../api/api';
 import { useUserContext } from '../../hooks/UserContext';
@@ -12,8 +13,8 @@ import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
 import Error from '../Misc/Error/Error';
 import AddRoutine from './AddRoutine';
 import Routine from './Routine';
-import EditRoutine from './EditRoutine';
 import UseRoutine from './UseRoutine';
+import { editRoutine, deleteRoutine } from '../../api/api';
 
 export default function Routines({ workout, setWorkout }) {
     const { user } = useUserContext();
@@ -28,7 +29,7 @@ export default function Routines({ workout, setWorkout }) {
     const [error, setError] = useState(false);
     const navigate = useNavigate();
     const [addRoutineFooter, setAddRoutineFooter] = useState(null);
-    const [editRoutineFooter, setEditRoutineFooter] = useState(null);
+
     const [selectedRoutine, setSelectedRoutine] = useState({
         id: 0,
         name: "",
@@ -130,21 +131,19 @@ export default function Routines({ workout, setWorkout }) {
                 />
             </Modal>
 
-            <Modal 
-                openModal={editModal} 
-                closeModal={() => setEditModal(false)} 
+            <EditModal
+                openModal={editModal}
+                closeModal={() => setEditModal(false)}
                 title="Edit Routine"
-                footer={editRoutineFooter}
-            >
-                <EditRoutine 
-                    closeModal={() => setEditModal(false)} 
-                    setFooter={setEditRoutineFooter} 
-                    updateRoutines={updateRoutines} 
-                    formData={selectedRoutine}
-                    setFormData={setSelectedRoutine}
-                    onClose={!editModal}
-                />
-            </Modal>
+                updateFunction={updateRoutines}
+                editFunction={editRoutine}
+                deleteFunction={deleteRoutine}
+                formData={selectedRoutine}
+                setFormData={setSelectedRoutine}
+                onClose={!editModal}
+                formId="editRoutineForm"
+                formComponent={"routine"}
+             />
 
             <Modal 
                 openModal={workoutModal} 

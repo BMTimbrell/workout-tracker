@@ -1,7 +1,9 @@
 .tab-list {
     display: flex;
-    justify-content: space-around;
     box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 999;
+    /* justify-content: space-around; */
 }
 
 .tab-list li {
@@ -9,7 +11,7 @@
 }
 
 .tab {
-    background-color: transparent;
+    background-color: white;
     font-size: 1rem;
     width: 100%;
     font-weight: bold;
@@ -28,5 +30,7 @@
 }
 
 .tab-panel {
-    padding: 1.5rem 1rem 1.25rem;
+    padding: 2rem 1rem 1.25rem;
+    max-height: calc(100dvh - 12.5rem - var(--tab-list-height));
+    overflow-y: auto;
 }

@@ -6,8 +6,3 @@
     gap: 1rem;
     margin-top: 2rem;
 }
-
-.date-picker-container {
-    margin-inline: auto;
-    max-width: 15.625rem;
-}

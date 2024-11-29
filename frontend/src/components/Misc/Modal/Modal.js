@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import styles from './Modal.module.css';
 
 export default function Modal({ openModal, closeModal, children, title, footer }) {
-    const ref = useRef();
+    const ref = useRef(null);
 
     useEffect(() => {
         if (openModal) {
@@ -19,7 +19,12 @@ export default function Modal({ openModal, closeModal, children, title, footer }
                 <button onClick={closeModal} className={styles["modal-close"]}>&times;</button>
             </div>
 
-            <div className={styles["modal-content"]}>
+            {/* make overflow hidden if has tabs so can keep tab links fixed */}
+            <div className={
+                Array.isArray(children) && children.some(child => child?.type?.name === "Tabs") ? 
+                    `${styles["modal-content"]} ${styles["overflow-hidden"]}` : 
+                    styles["modal-content"]
+            }>
                 {Array.isArray(children) ? children.filter((el, index) => index < children.length - 1) : children}
             </div>
 

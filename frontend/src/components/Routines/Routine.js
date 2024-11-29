@@ -1,8 +1,11 @@
 import styles from './Routines.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
+import { useUnitContext } from '../../hooks/UnitContext';
+import { convertToLbs } from '../../utils/utils';
 
 export default function Routine({ routine, openModal, setSelectedRoutine, openWorkoutModal }) {
+    const [unit] = useUnitContext();
 
     const useRoutine = () => {
         openWorkoutModal();
@@ -25,15 +28,22 @@ export default function Routine({ routine, openModal, setSelectedRoutine, openWo
                     className="button button-secondary" 
                     onClick={() => {
                         openModal();
-                        setSelectedRoutine(prev => ({
-                            ...prev,
+                        setSelectedRoutine({
                             id: routine.id,
                             name: routine.name,
                             exercises: routine.exercises[0] ? routine.exercises.map(exercise => {
-                                return [exercise.id, exercise.sets]
+                                return [
+                                    exercise.id, 
+                                    exercise.sets.map(set => {
+                                        if (unit.unit === "lbs") {
+                                            set.weight = convertToLbs(set.weight);
+                                        }
+                                        return set;
+                                    })
+                                ]
                             }) : [],
                             setsToDelete: []
-                        }));
+                        });
                     }}
                 >
                     <FontAwesomeIcon icon={faPencil} />

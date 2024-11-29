@@ -8,7 +8,7 @@ import WorkoutExercise from './WorkoutExercise';
 import Tabs from '../Misc/Tabs/Tabs';
 import ExerciseInfo from '../Exercises/ExerciseInfo';
 
-export default function WorkoutForm({ handleSubmit, formData, setFormData }) {
+export default function WorkoutForm({ handleSubmit, formData, setFormData, isEdit = false }) {
 
     const [exerciseModal, setExerciseModal] = useState(false);
     const [exercises, setExercises] = useState([]);
@@ -26,6 +26,13 @@ export default function WorkoutForm({ handleSubmit, formData, setFormData }) {
 
     const [deleteModal, setDeleteModal] = useState(false);
     const [exerciseToRemove, setExerciseToRemove] = useState(null);
+
+    const handleChange = e => {
+        setFormData(prev => ({
+            ...prev,
+            name: e.target.value
+        }))
+    };
 
     const addExercises = exercises => {
         setExercises(prev => [...prev, exercises]);
@@ -75,8 +82,23 @@ export default function WorkoutForm({ handleSubmit, formData, setFormData }) {
 
     return (
         <>
-            <form id="addWorkoutForm" className="form" onSubmit={handleSubmit}>
+            <form id={isEdit ? "editWorkoutForm" : "addWorkoutForm"} className="form" onSubmit={handleSubmit}>
                 <div className="input-container">
+
+
+                    {isEdit && (
+                        <div className="floating-input">
+                            <input 
+                                id="name"
+                                type="text"
+                                onChange={handleChange} 
+                                placeholder=" "
+                                value={formData.name} 
+                                required 
+                            />
+                            <label htmlFor="name">Workout Name</label>
+                        </div>
+                    )}
 
                     {formData.exercises.map((exercise, index) => (
                         <WorkoutExercise 

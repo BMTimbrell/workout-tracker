@@ -1,9 +1,7 @@
 import ExerciseList from './ExerciseList';
-import ExerciseInfo from './ExerciseInfo';
 import AddExercise from './AddExercise';
 import EditExercise from './EditExercise';
 import Modal from '../Misc/Modal/Modal';
-import ModalFooter from '../Misc/Modal/ModalFooter';
 import { useEffect, useState, useCallback } from 'react';
 import { getExercises, searchExercises } from '../../api/api';
 import { useUserContext } from '../../hooks/UserContext';
@@ -15,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
 import Error from '../Misc/Error/Error';
 import Select from '../Misc/Select/Select';
-import Tabs from '../Misc/Tabs/Tabs';
+import ExerciseInfoModal from '../Misc/Modal/ExerciseInfoModal';
 
 export default function Exercises({ isModal = false, addToForm, exercisesAdded, removeFromForm }) {
     const { user } = useUserContext();
@@ -148,19 +146,13 @@ export default function Exercises({ isModal = false, addToForm, exercisesAdded, 
                 />
             </Modal>
 
-            <Modal 
-                openModal={infoModal} 
-                closeModal={() => setInfoModal(false)} 
+            <ExerciseInfoModal
+                openModal={infoModal}
+                closeModal={() => setInfoModal(false)}
                 title={modalTitle}
-            >
-                <Tabs tabNames={!customExercise ? ["About", "History", "Graph"] : ["History", "Graph"]}>
-                    {!customExercise && <ExerciseInfo id={selectedExercise.id} />}
-                    <p>hi</p>
-                </Tabs>
-                <ModalFooter>
-                    <button className="button button-tertiary" onClick={() => setInfoModal(false)}>Close</button>
-                </ModalFooter>
-            </Modal>
+                customExercise={customExercise}
+                exerciseId={selectedExercise.id}
+            />
 
             <Modal openModal={editModal} closeModal={() => setEditModal(false)} title="Edit Exercise">
                 <EditExercise

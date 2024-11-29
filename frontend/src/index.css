@@ -9,6 +9,8 @@
   --link-color: rgb(21, 56, 255);
   --form-max-width: 31.25rem;
   --form-padding: 2rem;
+  --bg-color: #e8f0f7;
+  --header-height: 3.75rem;
 }
 
 *, *::before, *::after {
@@ -39,7 +41,7 @@ button {
 body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
-  background-color: #e8f0f7;
+  background-color: var(--bg-color);
 }
 
 code {
@@ -51,6 +53,7 @@ main {
   padding: 1rem;
   max-width: 93.75rem;
   margin-inline: auto;
+  position: relative;
 }
 
 h1 {

@@ -1,13 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from './Tabs.module.css';
 
-export default function Tabs({ children, tabNames }) {
+export default function Tabs({ children, tabNames, tabPanelRef }) {
     const [tab, setTab] = useState(0);
+    const tabListRef = useRef(null);
+
     children = children.filter(Boolean);
 
+    useEffect(() => {
+        // set tab list height property for tab panel max height calculation
+        if (
+            tabListRef?.current && 
+            (!tabPanelRef?.current.style.getPropertyValue('--tab-list-height') ||
+            tabPanelRef?.current.style.getPropertyValue('--tab-list-height') === "0px")
+        ) {
+            tabPanelRef?.current.style.setProperty('--tab-list-height', tabListRef.current.offsetHeight + 'px');
+        }
+    }, [children, tabPanelRef]);
+
     return (
-        <div>
-            <ul className={styles["tab-list"]}>
+        <>
+            <ul ref={tabListRef} className={styles["tab-list"]}>
                 {tabNames.map((name, index) => (
                     <li key={index}>
                         <button 
@@ -19,9 +32,10 @@ export default function Tabs({ children, tabNames }) {
                     </li>
                 ))}
             </ul>
-            <div className={styles["tab-panel"]}>
+
+            <div ref={tabPanelRef} className={styles["tab-panel"]}>
                 {children[tab]}
             </div>
-        </div>
+        </>
     );
 }

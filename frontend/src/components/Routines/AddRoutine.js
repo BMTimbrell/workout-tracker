@@ -1,6 +1,7 @@
 import ModalFooter from '../Misc/Modal/ModalFooter';
 import { useState, useEffect } from 'react';
 import { useUserContext } from '../../hooks/UserContext';
+import { useUnitContext } from '../../hooks/UnitContext';
 import RoutineForm from './RoutineForm';
 import modalStyles from '../Misc/Modal/Modal.module.css';
 import { addRoutine } from '../../api/api';
@@ -13,6 +14,7 @@ export default function AddRoutine({ closeModal, setFooter, updateRoutines, onCl
     });
 
     const { user } = useUserContext();
+    const [unit] = useUnitContext();
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(false);
 
@@ -22,7 +24,12 @@ export default function AddRoutine({ closeModal, setFooter, updateRoutines, onCl
         e.preventDefault();
         setSubmitting(true);
 
-        const response = await addRoutine(user?.id, formData.name, formData.exercises);
+        const response = await addRoutine(
+            user?.id, 
+            formData.name, 
+            formData.exercises, 
+            unit?.unit
+        );
         
         if (response?.authorisationFailed) {
             navigate('/logout');

@@ -7,8 +7,7 @@ import Exercises from '../Exercises/Exercises';
 import modalStyles from '../Misc/Modal/Modal.module.css';
 import styles from './RoutineForm.module.css';
 import RoutineExercise from './RoutineExercise';
-import Tabs from '../Misc/Tabs/Tabs';
-import ExerciseInfo from '../Exercises/ExerciseInfo';
+import ExerciseInfoModal from '../Misc/Modal/ExerciseInfoModal';
 
 export default function RoutineForm({ handleSubmit, formData, setFormData, error, isEdit = false }) {
 
@@ -280,19 +279,13 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
             </Modal>
 
             {/* exercise info */}
-            <Modal 
-                openModal={infoModal} 
-                closeModal={() => setInfoModal(false)} 
+            <ExerciseInfoModal
+                openModal={infoModal}
+                closeModal={() => setInfoModal(false)}
                 title={infoExercise.name}
-            >
-                <Tabs tabNames={!infoExercise.userId ? ["About", "History", "Graph"] : ["History", "Graph"]}>
-                    {!infoExercise.userId && <ExerciseInfo id={infoExercise.id} />}
-                    <p>hi</p>
-                </Tabs>
-                <ModalFooter>
-                    <button className="button button-tertiary" onClick={() => setInfoModal(false)}>Close</button>
-                </ModalFooter>
-            </Modal>
+                customExercise={infoExercise.userId}
+                exerciseId={infoExercise.id}
+            />
         </>
     );
 }

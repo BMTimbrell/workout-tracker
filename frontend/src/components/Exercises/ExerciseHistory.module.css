@@ -1,0 +1,34 @@
+.workout {
+    border: var(--light-border);
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+
+.workout h3 {
+    font-size: 1.125rem;
+    margin-bottom: 1em;
+}
+
+.workout time {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.sets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.sets > *:nth-child(even) {
+    text-align: right;
+}
+
+.set-heading {
+    font-weight: bold;
+}
+
+.set-number {
+    margin-right: 0.5rem;
+}

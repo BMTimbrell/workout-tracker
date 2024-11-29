@@ -1,15 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../../hooks/UserContext';
-import { getWorkouts } from '../../api/api';
+import { getWorkouts, editWorkout, deleteWorkout } from '../../api/api';
 import HistoryWorkout from './HistoryWorkout';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from '../Misc/DatePicker/DatePicker';
 import styles from './History.module.css';
 import Modal from '../Misc/Modal/Modal';
 import ModalFooter from '../Misc/Modal/ModalFooter';
 import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
 import Error from '../Misc/Error/Error';
+import EditModal from '../Misc/Modal/EditModal';
 
 export default function History() {
     const { user } = useUserContext();
@@ -17,20 +17,19 @@ export default function History() {
     const [error, setError] = useState(false);
     const navigate = useNavigate();
     const [workouts, setWorkouts] = useState(null);
-    const [date, setDate] = useState(null);
 
     const [infoModal, setInfoModal] = useState(false);
-    const [selectedWorkout, setSelectedWorkout] = useState(null);
+    const [editModal, setEditModal] = useState(false);
+    const [selectedWorkout, setSelectedWorkout] = useState({
+        id: 0,
+        name: "",
+        exercises: [],
+        setsToDelete: []
+    });
 
     const formatDate = date => {
         return date ? `${date.getFullYear()} ${date.getMonth()} ${date.getDate()}` : '';
     }
-
-    const isWorkoutDate = date => {
-        return workouts?.some(workout => 
-            formatDate(new Date(workout.date)) === formatDate(new Date(date))
-        );
-    };
 
     const updateWorkouts = useCallback(async () => {
         setLoading(true);
@@ -56,12 +55,6 @@ export default function History() {
         updateWorkouts();
     }, [updateWorkouts]);
 
-    useEffect(() => {
-        const headerHeight = document.querySelector('header').offsetHeight;
-        const workout = document.querySelector(`[data-date="${formatDate(date)}"]`)?.offsetTop;
-        window.scrollTo({ top: workout - headerHeight, behavior: 'smooth' });
-    }, [date]);
-
     if (workouts?.length === 0) {
         return (
             <>
@@ -76,22 +69,13 @@ export default function History() {
         <>
             <h1>History</h1>
 
-            <div className={styles["date-picker-container"]}>
-                {!loading && !error && 
-                    <DatePicker 
-                        selected={date} 
-                        onChange={date => setDate(date)} 
-                        highlightDates={workouts?.map(workout => new Date(workout.date))}
-                        dateFormat="dd/MM/yyyy"
-                        placeholderText="Select date"
-                        maxDate={new Date()}
-                        isClearable={true}
-                        showYearDropdown
-                        scrollableYearDropdown
-                        filterDate={isWorkoutDate}
-                    />
-                }
-            </div>
+                    {!loading && !error && 
+                        <DatePicker
+                            dates={workouts?.map(workout => new Date(workout.date))}
+                            offsetHeight={document?.querySelector('header')?.offsetHeight}
+                        />
+                    }
+
 
             {
                 loading ? <LoadingSpinner /> : error ? <Error text="Failed to load data" /> : undefined
@@ -104,6 +88,8 @@ export default function History() {
                         workout={workout} 
                         formatDate={formatDate} 
                         openInfo={() => setInfoModal(true)}
+                        openEdit={() => setEditModal(true)}
+                        setSelectedWorkout={setSelectedWorkout}
                     />
                 ))}
             </div>
@@ -118,6 +104,21 @@ export default function History() {
                     <button className="button button-tertiary" onClick={() => setInfoModal(false)}>Close</button>
                 </ModalFooter>
             </Modal>
+
+            <EditModal
+                openModal={editModal}
+                closeModal={() => setEditModal(false)}
+                title="Edit Workout"
+                updateFunction={updateWorkouts}
+                editFunction={editWorkout}
+                deleteFunction={deleteWorkout}
+                formData={selectedWorkout}
+                setFormData={setSelectedWorkout}
+                onClose={!editModal}
+                formId="editWorkoutForm"
+                formComponent={"workout"}
+             />
+
         </>
     );
 }

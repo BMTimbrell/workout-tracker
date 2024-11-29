@@ -1,11 +1,22 @@
 .container {
     margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 1.25rem;
 }
 
 .list {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    overflow: hidden;
+}
+
+.list > li {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .list > li:nth-child(2) {
