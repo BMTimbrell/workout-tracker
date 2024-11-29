@@ -314,7 +314,7 @@ const getRoutines = async (req, res) => {
                 +'JOIN exercises ON routines_exercises.exercise_id = exercises.id '
                 +'JOIN ('
                 +    'SELECT routine_sets.id, routine_sets.weight, routine_sets.reps '
-                +    'FROM routine_sets ORDER BY routine_sets.id'
+                +    'FROM routine_sets'
                 +  ') sets ON sets.id = routines_exercises.set_id '
                 +'GROUP BY routines_exercises.exercise_order, routines_exercises.routine_id, exercises.id '
               +')'
@@ -461,7 +461,7 @@ const getWorkouts = async (req, res) => {
                 +'JOIN exercises ON workouts_exercises.exercise_id = exercises.id '
                 +'JOIN ('
                 +    'SELECT workout_sets.id, workout_sets.weight, workout_sets.reps, workout_sets.one_rep_max, workout_sets.best_set '
-                +    'FROM workout_sets ORDER BY workout_sets.id'
+                +    'FROM workout_sets'
                 +  ') sets ON sets.id = workouts_exercises.set_id '
                 +'GROUP BY workouts_exercises.exercise_order, workouts_exercises.workout_id, exercises.id '
               +')'
@@ -469,7 +469,8 @@ const getWorkouts = async (req, res) => {
               +'FROM workouts '
               +'LEFT JOIN exercise_list ON exercise_list.workout_id = workouts.id '
               +'WHERE workouts.user_id = $1 '
-              +'GROUP BY workouts.id', [id]
+              +'GROUP BY workouts.id '
+              +'ORDER BY workouts.date DESC', [id]
         );
 
         if (workouts.rows.length > 0) {
@@ -484,7 +485,7 @@ const getWorkouts = async (req, res) => {
                 return workout;
             });
         }
-        console.log(workouts.rows);
+
         return res.status(200).json({workouts: workouts.rows});
     } catch (error) {
         console.log(error);
@@ -596,6 +597,53 @@ const getNumberWorkoutsByExercise = async (req, res) => {
     }
 };
 
+const getWorkoutSetsByExercise = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const exerciseId = parseInt(req.params.exerciseId);
+
+    try {
+        const workouts = await pool.query(
+            'SELECT workouts.id, workouts.name, workouts.date, json_agg(sets ORDER BY sets.id) AS sets '
+            +'FROM workouts '
+            +'JOIN workouts_exercises ON workouts.id = workouts_exercises.workout_id '
+            +'JOIN ('
+                +'SELECT workout_sets.id, workout_sets.weight, workout_sets.reps, workout_sets.one_rep_max '
+                +'FROM workout_sets'
+            +') sets ON sets.id = workouts_exercises.set_id '
+            +'WHERE workouts_exercises.exercise_id = $1 AND workouts.user_id = $2 '
+            +'GROUP BY workouts.id '
+            +'ORDER BY workouts.date DESC', [exerciseId, userId]
+        );
+
+        return res.status(200).json({workouts: workouts.rows});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
+const deleteWorkout = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const workoutId = parseInt(req.params.workoutId);
+
+    try {
+        const setIds = await pool.query('SELECT set_id FROM workouts_exercises WHERE workout_id = $1', 
+            [workoutId]);
+        
+        setIds.rows.forEach(async set => {
+            await pool.query('DELETE FROM workout_sets WHERE id = $1', [set.set_id]);
+        });
+        
+        await pool.query('DELETE FROM workouts WHERE user_id = $1 AND id = $2', 
+        [userId, workoutId]);
+
+        return res.status(200).json({message: 'workout deleted'});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
 
 module.exports = {
     checkUserAuthorised,
@@ -619,5 +667,7 @@ module.exports = {
     addWorkout,
     getWorkouts,
     getNumberRoutinesByExercise,
-    getNumberWorkoutsByExercise
+    getNumberWorkoutsByExercise,
+    getWorkoutSetsByExercise,
+    deleteWorkout
 };
