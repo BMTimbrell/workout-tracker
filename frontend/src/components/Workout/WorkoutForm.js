@@ -7,6 +7,7 @@ import styles from '../Routines/RoutineForm.module.css';
 import WorkoutExercise from './WorkoutExercise';
 import Tabs from '../Misc/Tabs/Tabs';
 import ExerciseInfo from '../Exercises/ExerciseInfo';
+import ExerciseInfoModal from '../Misc/Modal/ExerciseInfoModal';
 
 export default function WorkoutForm({ handleSubmit, formData, setFormData, isEdit = false }) {
 
@@ -255,19 +256,13 @@ export default function WorkoutForm({ handleSubmit, formData, setFormData, isEdi
             </Modal>
 
             {/* exercise info */}
-            <Modal 
-                openModal={infoModal} 
+            <ExerciseInfoModal
+                openModal={infoModal}
                 closeModal={() => setInfoModal(false)} 
                 title={infoExercise.name}
-            >
-                <Tabs tabNames={!infoExercise.userId ? ["About", "History", "Graph"] : ["History", "Graph"]}>
-                    {!infoExercise.userId && <ExerciseInfo id={infoExercise.id} />}
-                    <p>hi</p>
-                </Tabs>
-                <ModalFooter>
-                    <button className="button button-tertiary" onClick={() => setInfoModal(false)}>Close</button>
-                </ModalFooter>
-            </Modal>
+                exerciseId={infoExercise.id}
+                customExercise={infoExercise.userId}
+            />
         </>
     );
 }

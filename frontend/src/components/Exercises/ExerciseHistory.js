@@ -29,7 +29,12 @@ export default function ExerciseHistory({ id, tabPanelRef }) {
                     {!loading && !error && 
                         <DatePicker 
                             dates={data.workouts.map(workout => new Date(workout.date))}
-                            scrollElement={tabPanelRef?.current}     
+                            scrollElement={tabPanelRef?.current}   
+                            offsetHeight={
+                                parseInt(getComputedStyle(document.documentElement)
+                                    .getPropertyValue('--tab-list-height')
+                                        .slice(0, -2)) + 110
+                            }  
                         />
                     }
 
@@ -71,7 +76,7 @@ export function ExerciseSets({ title, sets }) {
                 <React.Fragment key={index}>
                     <div>
                         <span className={styles["set-number"]}>{index + 1}</span>
-                        {unit?.unit === "lbs" ? convertToLbs(set.weight) : set.weight}
+                        {unit?.unit === "lbs" ? convertToLbs(set.weight) : set.weight}&nbsp;
                         {unit?.unit === "lbs" ? 'lbs' : 'kg'} x {set.reps}
                     </div>
                     <div>

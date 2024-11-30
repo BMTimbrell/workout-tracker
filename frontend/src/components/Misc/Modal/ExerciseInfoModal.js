@@ -3,6 +3,7 @@ import ModalFooter from './ModalFooter';
 import Tabs from '../Tabs/Tabs';
 import ExerciseInfo from '../../Exercises/ExerciseInfo';
 import ExerciseHistory from '../../Exercises/ExerciseHistory';
+import ExerciseGraph from '../../Exercises/ExerciseGraph';
 import { useRef } from 'react';
 
 export default function ExerciseInfoModal({ openModal, closeModal, title, customExercise, exerciseId }) {
@@ -18,7 +19,7 @@ export default function ExerciseInfoModal({ openModal, closeModal, title, custom
             <Tabs tabNames={!customExercise ? ["About", "History", "Graph"] : ["History", "Graph"]} tabPanelRef={ref}>
                 {!customExercise && <ExerciseInfo id={exerciseId} />}
                 <ExerciseHistory id={exerciseId} tabPanelRef={ref} />
-                
+                <ExerciseGraph id={exerciseId} />
             </Tabs>
             
             <ModalFooter>

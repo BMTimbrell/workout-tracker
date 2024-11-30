@@ -14,8 +14,8 @@ export default function useFetch(endpoint, options = {}, dependencies = [], url=
 
     useEffect(() => {
         if (endpoint) {
-            const controller = new AbortController();
             setLoading(true);
+            const controller = new AbortController();
             fetch(url + endpoint, { 
                 signal: controller.signal,
                 ...DEFAULT_OPTIONS,

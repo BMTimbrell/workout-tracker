@@ -60,6 +60,6 @@
     color: initial;
     z-index: 9999;
     height: auto;
-    background-color: inherit;
+    background-color: white;
     padding: 0 0.25rem;
 }

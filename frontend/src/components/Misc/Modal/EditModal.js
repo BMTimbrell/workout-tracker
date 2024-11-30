@@ -86,40 +86,6 @@ export default function EditRoutine({
         setDeleting(false);
     };
 
-    // useEffect(() => {
-    //     setFooter(
-    //         <ModalFooter>
-    //             <button 
-    //                 className="button button-danger" 
-    //                 onClick={() => setDeleteModal(true)}
-    //                 disabled={submitting && true}
-    //             >
-    //                 <FontAwesomeIcon icon={faTrashCan} />
-    //                 <span>Delete</span>
-    //             </button>
-
-    //             <div className={modalStyles["button-container2"]}>
-    //                 <button 
-    //                     className="button button-tertiary" 
-    //                     onClick={() => closeModal()}
-    //                 >
-    //                     Cancel
-    //                 </button>
-    //                 <button 
-    //                     form={formId} 
-    //                     type="submit" 
-    //                     className="button button-primary" 
-    //                     disabled={(!formData.name || submitting || !changesMade) && true}
-    //                 >
-    //                     {!submitting ? 'Save' : 'Saving...'}
-    //                 </button>
-    //             </div>
-
-    //         </ModalFooter>
-    //     );
-    //     // eslint-disable-next-line
-    // }, [formData.name, submitting, changesMade]);
-
     useEffect(() => {
         if (onClose) {
             setError(false);

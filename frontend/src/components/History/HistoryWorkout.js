@@ -52,7 +52,7 @@ export default function HistoryWorkout({ workout, formatDate, openInfo, openEdit
                             <React.Fragment key={set.id}>
                                 <div>{workout.exercises[index].sets.length} x {exercise.name}</div>
                                 <div>
-                                    {unit?.unit === "lbs" ? convertToLbs(set.weight) : set.weight}
+                                    {unit?.unit === "lbs" ? convertToLbs(set.weight) : set.weight}&nbsp;
                                     {unit?.unit === "lbs" ? 'lbs' : 'kg'} x {set.reps}
                                 </div>
                             </React.Fragment>
@@ -70,7 +70,7 @@ export default function HistoryWorkout({ workout, formatDate, openInfo, openEdit
                     <FontAwesomeIcon icon={faClock} />
                     <span>
                         {moment.duration(workout.duration, "HH:mm:ss").format("h [hrs] m [min]") === "0 mins" ? 
-                            moment.duration("0:00:21", "HH:mm:ss").format("s [seconds]") : 
+                            moment.duration(workout.duration, "HH:mm:ss").format("s [seconds]") : 
                             moment.duration(workout.duration, "HH:mm:ss").format("h [hrs] m [min]")
                         }
                     </span>

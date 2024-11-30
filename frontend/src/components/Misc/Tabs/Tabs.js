@@ -14,7 +14,7 @@ export default function Tabs({ children, tabNames, tabPanelRef }) {
             (!tabPanelRef?.current.style.getPropertyValue('--tab-list-height') ||
             tabPanelRef?.current.style.getPropertyValue('--tab-list-height') === "0px")
         ) {
-            tabPanelRef?.current.style.setProperty('--tab-list-height', tabListRef.current.offsetHeight + 'px');
+            document.documentElement.style.setProperty('--tab-list-height', tabListRef.current.offsetHeight + 'px');
         }
     }, [children, tabPanelRef]);
 

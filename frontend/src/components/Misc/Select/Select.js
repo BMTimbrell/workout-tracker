@@ -1,6 +1,6 @@
 import styles from './Select.module.css';
 
-export default function Select({ onChange, children, id, value }) {
+export default function Select({ onChange, children, id, value, className }) {
     const properties = {
         onChange,
         id,
@@ -8,7 +8,7 @@ export default function Select({ onChange, children, id, value }) {
     };
 
     return (
-        <div className={styles.select}>
+        <div className={className ? `${styles.select} ${className}` : styles.select}>
             <select { ...properties }>
                 {children}
             </select>
