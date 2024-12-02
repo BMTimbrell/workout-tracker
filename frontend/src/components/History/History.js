@@ -10,6 +10,11 @@ import ModalFooter from '../Misc/Modal/ModalFooter';
 import LoadingSpinner from '../Misc/LoadingSpinner/LoadingSpinner';
 import Error from '../Misc/Error/Error';
 import EditModal from '../Misc/Modal/EditModal';
+import HistoryWorkoutInfo from './HistoryWorkoutInfo';
+import Moment from 'react-moment';
+import moment from 'moment';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
 
 export default function History() {
     const { user } = useUserContext();
@@ -97,10 +102,25 @@ export default function History() {
             <Modal 
                 openModal={infoModal} 
                 closeModal={() => setInfoModal(false)} 
-                title=""
+                title={selectedWorkout.name}
             >
+                <HistoryWorkoutInfo 
+                    exercises={selectedWorkout.exercises}
+                />
 
                 <ModalFooter>
+                    <div className={styles["time-container"]}>
+                        <Moment local format="HH:mm, ddd, Do MMM YYYY">
+                            {selectedWorkout.date}
+                        </Moment>
+                        <time>
+                            <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>&nbsp;
+                            {moment.duration(selectedWorkout.duration, "HH:mm:ss").format("h [hrs] m [min]") === "0 mins" ? 
+                                moment.duration(selectedWorkout.duration, "HH:mm:ss").format("s [seconds]") : 
+                                moment.duration(selectedWorkout.duration, "HH:mm:ss").format("h [hrs] m [min]")
+                            }
+                        </time>
+                    </div>
                     <button className="button button-tertiary" onClick={() => setInfoModal(false)}>Close</button>
                 </ModalFooter>
             </Modal>

@@ -5,8 +5,6 @@ import Exercises from '../Exercises/Exercises';
 import modalStyles from '../Misc/Modal/Modal.module.css';
 import styles from '../Routines/RoutineForm.module.css';
 import WorkoutExercise from './WorkoutExercise';
-import Tabs from '../Misc/Tabs/Tabs';
-import ExerciseInfo from '../Exercises/ExerciseInfo';
 import ExerciseInfoModal from '../Misc/Modal/ExerciseInfoModal';
 
 export default function WorkoutForm({ handleSubmit, formData, setFormData, isEdit = false }) {

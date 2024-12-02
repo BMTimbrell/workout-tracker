@@ -15,7 +15,29 @@ export default function HistoryWorkout({ workout, formatDate, openInfo, openEdit
             <div className={styles.header}>
                 <h2>{workout.name}</h2>
                 <div className={styles["button-container"]}>
-                    <button className="button button-secondary" onClick={openInfo}>
+                    <button className="button button-secondary" onClick={() => {
+                        openInfo();
+                        setSelectedWorkout({
+                            id: workout.id,
+                            name: workout.name,
+                            exercises: workout.exercises[0] ? workout.exercises.map(exercise => {
+                                return [
+                                    exercise.id, 
+                                    exercise.sets.map(set => {
+                                        if (unit.unit === "lbs") {
+                                            return {
+                                                ...set,
+                                                [set.weight] : convertToLbs(set.weight)
+                                            };
+                                        }
+                                        return set;
+                                    })
+                                ]
+                            }) : [],
+                            date: workout.date,
+                            duration: workout.duration
+                        });
+                    }}>
                         <FontAwesomeIcon icon={faInfo}></FontAwesomeIcon>
                         </button>
                     <button className="button button-secondary" onClick={() => {
@@ -28,7 +50,10 @@ export default function HistoryWorkout({ workout, formatDate, openInfo, openEdit
                                     exercise.id, 
                                     exercise.sets.map(set => {
                                         if (unit.unit === "lbs") {
-                                            set.weight = convertToLbs(set.weight);
+                                            return {
+                                                ...set,
+                                                [set.weight] : convertToLbs(set.weight)
+                                            };
                                         }
                                         return set;
                                     })
@@ -62,18 +87,18 @@ export default function HistoryWorkout({ workout, formatDate, openInfo, openEdit
             </div>
             
             <div className={styles.footer}>
-                <Moment local format="dddd, Do MMM YYYY">
+                <Moment local format="ddd, Do MMM YYYY">
                     {workout.date}
                 </Moment>
 
                 <div className={styles.time}>
                     <FontAwesomeIcon icon={faClock} />
-                    <span>
+                    <time>
                         {moment.duration(workout.duration, "HH:mm:ss").format("h [hrs] m [min]") === "0 mins" ? 
                             moment.duration(workout.duration, "HH:mm:ss").format("s [seconds]") : 
                             moment.duration(workout.duration, "HH:mm:ss").format("h [hrs] m [min]")
                         }
-                    </span>
+                    </time>
                 </div>
             </div>
         </div>

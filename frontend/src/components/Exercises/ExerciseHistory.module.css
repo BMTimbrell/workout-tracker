@@ -16,7 +16,7 @@
 
 .sets {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     row-gap: 0.5rem;
     margin-bottom: 1rem;
 }
@@ -27,6 +27,9 @@
 
 .set-heading {
     font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .set-number {
