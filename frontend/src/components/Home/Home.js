@@ -100,7 +100,11 @@ export default function Home() {
                 {error && <p><Error text="Failed to update routine." /></p>}
                 <ModalFooter>
                     <div className={modalStyles["button-container3"]}>
-                        <button onClick={() => setUpdateModal(false)} className="button button-tertiary">
+                        <button 
+                        onClick={() => setUpdateModal(false)} 
+                        className="button button-tertiary"
+                        disabled={submitting}
+                        >
                             Keep Original Routine
                         </button>
                         <button 
@@ -108,14 +112,14 @@ export default function Home() {
                             onClick={() => confirmUpdate(false)}
                             disabled={submitting}
                         >
-                            {!submitting ? 'Only Update Set Data' : 'Updating...'}
+                            Only Update Set Data
                         </button>
                         {routine?.removedSets.length > 0 && <button 
                             className="button button-danger" 
                             onClick={() => confirmUpdate(true)}
                             disabled={submitting}
                         >
-                            {!submitting ? 'Update Routine and Delete Any Removed Sets and Exercises' : 'Updating...'}
+                            Update Routine and Delete Any Removed Sets and Exercises
                         </button>}
                     </div>
                 </ModalFooter>

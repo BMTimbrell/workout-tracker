@@ -76,6 +76,14 @@ export default function Workout({
     const handleSubmit = e => {
         e.preventDefault();
 
+        if (
+            workout.exercises.length < 1 || 
+            !workout.exercises.some(exercise => exercise[1].some(set => set.reps))
+        ) {
+            setCancelModal(true);
+            return;
+        }
+
         const unfinishedSets = [].concat(...workout.exercises.map(
             exercise => exercise[1]).map(sets => sets.filter(set => !set.reps)
         )).map(set => set.id);
