@@ -144,7 +144,7 @@ export default function RoutineForm({ handleSubmit, formData, setFormData, error
                                 setReplaceModal(true);
                             }}
                             openDeleteModal={ex => openDeleteModal(ex)}
-                            removeFromDb={(setId) => setFormData(prev => ({
+                           addDeletedSet={(setId) => setFormData(prev => ({
                                 ...prev,
                                 setsToDelete: [...prev.setsToDelete, setId]
                             }))}

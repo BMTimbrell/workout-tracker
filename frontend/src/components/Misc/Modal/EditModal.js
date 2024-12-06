@@ -12,7 +12,7 @@ import Modal from './Modal';
 import Error from '../Error/Error';
 import errorStyles from '../Error/Error.module.css';
 
-export default function EditRoutine({ 
+export default function EditModal({ 
     editFunction,
     deleteFunction,
     openModal,
@@ -49,8 +49,11 @@ export default function EditRoutine({
             formData.setsToDelete,
             unit?.unit
         );
-        
-        if (response) {
+
+
+        if (response?.authorisationFailed) {
+            navigate('/logout');
+        } else if (response) {
             setError(false);
             setFormData({
                 id: 0,

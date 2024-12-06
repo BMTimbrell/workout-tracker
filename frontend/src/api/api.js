@@ -22,7 +22,6 @@ export const registerUser = async (name, email, password) => {
         
         return response.json();
     } catch (error) {
-        console.log(error);
         return null;
     }
 };
@@ -46,7 +45,6 @@ export const loginUser = async (email, password) => {
 
         return response.json();
     } catch (error) {
-        console.log(error);
         return null;
     }
 };
@@ -63,7 +61,6 @@ export const logoutUser = async () => {
         return response.json();
 
     } catch (error) {
-        console.log(error);
         return null;
     }
 };
@@ -81,7 +78,6 @@ export const fetchUser = async (id) => {
 
         return null;
     } catch (error) {
-        console.log(error);
         return null;
     }
 };
@@ -327,7 +323,6 @@ export const deleteRoutine = async (userId, routineId) => {
         
         return null;
     } catch (error) {
-        console.log(error);
         return null;
     }
 };
@@ -365,7 +360,6 @@ export const editRoutine = async (userId, routineId, name, exercises, setsToDele
         
         return null;
     } catch (error) {
-        console.log(error);
         return null;
     }
 };
@@ -398,7 +392,7 @@ export const addWorkout = async (id, name, exercises, time, units) => {
         exercises = exercises.map(exercise => {
             exercise[1] = exercise[1].map(set => {
                 set.weight = convertToKg(set.weight);
-                set["1RM"]= convertToKg(set["1RM"]);
+                set["1RM"] = convertToKg(set["1RM"]);
                 return set;
             });
             return exercise;
@@ -429,11 +423,11 @@ export const addWorkout = async (id, name, exercises, time, units) => {
 };
 
 export const editWorkout = async (userId, workoutId, name, exercises, setsToDelete, unit) => {
-
     if (unit === "lbs") {
         exercises = exercises.map(exercise => {
             exercise[1] = exercise[1].map(set => {
                 set.weight = convertToKg(set.weight);
+                set["1RM"] = convertToKg(set["1RM"]);
                 return set;
             });
             return exercise;
@@ -461,7 +455,6 @@ export const editWorkout = async (userId, workoutId, name, exercises, setsToDele
         
         return null;
     } catch (error) {
-        console.log(error);
         return null;
     }
 };
@@ -482,7 +475,6 @@ export const deleteWorkout = async (userId, workoutId) => {
         
         return null;
     } catch (error) {
-        console.log(error);
         return null;
     }
 };

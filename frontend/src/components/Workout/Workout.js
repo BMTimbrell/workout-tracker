@@ -11,7 +11,13 @@ import { useUserContext } from '../../hooks/UserContext';
 import { useNavigate } from 'react-router-dom';
 import Error from '../Misc/Error/Error';
 
-export default function Workout({ workout, setWorkout, removeWorkout }) {
+export default function Workout({ 
+    workout, 
+    setWorkout, 
+    removeWorkout, 
+    setUpdateModal,
+    setRoutine 
+}) {
     const { user } = useUserContext();
     const [elapsedTime, setElapsedTime] = useState(Date.now() - workout.startTime);
     const [error, setError] = useState(false);
@@ -70,11 +76,17 @@ export default function Workout({ workout, setWorkout, removeWorkout }) {
     const handleSubmit = e => {
         e.preventDefault();
 
-        const unfinishedSets = workout.exercises.map(
-            exercise => exercise[1]).find(sets => sets.find(set => !set.reps)
-        );
+        const unfinishedSets = [].concat(...workout.exercises.map(
+            exercise => exercise[1]).map(sets => sets.filter(set => !set.reps)
+        )).map(set => set.id);
 
-        if (unfinishedSets) {
+        setRoutine({
+            id: workout.routineId,
+            exercises: workout.exercises,
+            removedSets: [...(workout?.setsToDelete || []), ...unfinishedSets]
+        });
+
+        if (unfinishedSets.length > 0) {
             setSubmitMessage(
                 'Any empty sets will be deleted. Sets with data will be marked as completed.'
             );
@@ -110,8 +122,12 @@ export default function Workout({ workout, setWorkout, removeWorkout }) {
             navigate('/logout');
         } else if (response) {
             setError(false);
-            removeWorkout();
             setFinishModal(false);
+
+            if (!workout?.quickstart) {
+                setUpdateModal(true);
+            }
+            removeWorkout();
         } else {
             setError(true);
         }
@@ -209,6 +225,7 @@ export default function Workout({ workout, setWorkout, removeWorkout }) {
                     </div>
                 </ModalFooter>
             </Modal>
+
         </section>
     );
 }

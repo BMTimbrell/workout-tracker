@@ -12,7 +12,7 @@ import DropdownButton from '../Misc/DropdownButton/DropdownButton';
 import Modal from '../Misc/Modal/Modal';
 import ModalFooter from '../Misc/Modal/ModalFooter';
 import modalStyles from '../Misc/Modal/Modal.module.css';
-import { calc1RM } from '../../utils/utils';
+import { calc1RM, convertToLbs } from '../../utils/utils';
 
 export default function WorkoutExercise({ 
     id, 
@@ -23,7 +23,8 @@ export default function WorkoutExercise({
     toggleSelected, 
     replace, 
     openDeleteModal,
-    setInfo
+    setInfo,
+    addDeletedSet
  }) {
     const { user } = useUserContext();
     const [unit] = useUnitContext();
@@ -37,13 +38,13 @@ export default function WorkoutExercise({
             if (index === elIndex) {
                 el[1] = el[1].map((s, sIndex) => {
                     if (setIndex === sIndex) {
-                        if (s.completed) s.completed = false;
+                        if (s.completed) s = { ...s, completed: !s.completed };
                         if (e.target.name === "weight") {
-                            s.weight = Number(e.target.value);
+                            s = { ...s, weight: Number(e.target.value) };
                         } else if (e.target.name === "reps") {
-                            s.reps = Number(e.target.value);
+                            s = { ...s, reps: Number(e.target.value) };
                         }
-                        s["1RM"] = calc1RM(s.weight, s.reps);
+                        s = { ...s, "1RM": calc1RM(s.weight, s.reps) };
                     }
                     return s;
                 });
@@ -53,6 +54,11 @@ export default function WorkoutExercise({
     };
 
     const deleteSet = setIndex => {
+        // remove set from db if already in db
+        if (exercises[index][1][setIndex].id) {
+            addDeletedSet(exercises[index][1][setIndex].id);
+        }
+
         setExercises(exercises.map((el, elIndex) => {
             if (index === elIndex) {
                 el[1] = el[1].filter((s, sIndex) => {
@@ -75,19 +81,25 @@ export default function WorkoutExercise({
     const completeSet = setIndex => {
         setExercises(exercises.map((el, elIndex) => {
             if (index === elIndex) {
-                const set = el[1][setIndex];
-                set.completed = !set.completed;
+                let set = el[1][setIndex];
+                set = {
+                    ...set,
+                    completed: !set.completed
+                };
 
                 if (set.completed) {
-                    if (!set.reps) {
+                    if (!set.reps && set.placeholder?.reps) {
                         set.reps = set.placeholder.reps;
                     }
                     if (!set.weight && set.placeholder?.weight) {
-                        set.weight = set.placeholder.weight;
-                        set["1RM"] = calc1RM(set.weight, set.reps);
+                        set.weight = unit?.unit === "lbs" ? convertToLbs(set.placeholder.weight) : set.placeholder.weight;
                     }
+
+                    set["1RM"] = calc1RM(set.weight, set.reps);
                 }
+                return [el[0], el[1].with(setIndex, set)];
             }
+
             return el;
         }));
     };
@@ -161,8 +173,9 @@ export default function WorkoutExercise({
                                     min="0" 
                                     name="weight" 
                                     type="number" 
+                                    step=".05"
                                     value={set.weight ? set.weight : ''}
-                                    placeholder={set?.placeholder?.weight ? set.placeholder.weight : ''} 
+                                    placeholder={set?.placeholder?.weight ? unit?.unit === "lbs" ? convertToLbs(set.placeholder.weight) : set.placeholder.weight : ''} 
                                     onChange={e => handleChange(e, setIndex)} 
                                 />
 

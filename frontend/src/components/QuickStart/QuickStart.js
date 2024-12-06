@@ -15,7 +15,8 @@ export default function QuickStart({ workout, setWorkout }) {
                     setWorkout({
                         name: "My Workout",
                         exercises: [],
-                        startTime: Date.now()
+                        startTime: Date.now(),
+                        quickstart: true
                     });
                 } else {
                     setNewWorkoutModal(true);
@@ -44,7 +45,8 @@ export default function QuickStart({ workout, setWorkout }) {
                                 setWorkout({
                                     name: "My Workout",
                                     exercises: [],
-                                    startTime: Date.now()
+                                    startTime: Date.now(),
+                                    quickstart: true
                                 });
                             }}
                         >

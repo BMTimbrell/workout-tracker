@@ -113,8 +113,9 @@ export default function History() {
                         <Moment local format="HH:mm, ddd, Do MMM YYYY">
                             {selectedWorkout.date}
                         </Moment>
-                        <time>
-                            <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>&nbsp;
+
+                        <time className={styles.duration}>
+                            <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
                             {moment.duration(selectedWorkout.duration, "HH:mm:ss").format("h [hrs] m [min]") === "0 mins" ? 
                                 moment.duration(selectedWorkout.duration, "HH:mm:ss").format("s [seconds]") : 
                                 moment.duration(selectedWorkout.duration, "HH:mm:ss").format("h [hrs] m [min]")

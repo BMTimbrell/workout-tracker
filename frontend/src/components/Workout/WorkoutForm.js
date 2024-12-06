@@ -6,8 +6,10 @@ import modalStyles from '../Misc/Modal/Modal.module.css';
 import styles from '../Routines/RoutineForm.module.css';
 import WorkoutExercise from './WorkoutExercise';
 import ExerciseInfoModal from '../Misc/Modal/ExerciseInfoModal';
+import Error from '../Misc/Error/Error';
+import errorStyles from '../Misc/Error/Error.module.css';
 
-export default function WorkoutForm({ handleSubmit, formData, setFormData, isEdit = false }) {
+export default function WorkoutForm({ handleSubmit, formData, setFormData, error, isEdit = false }) {
 
     const [exerciseModal, setExerciseModal] = useState(false);
     const [exercises, setExercises] = useState([]);
@@ -55,6 +57,15 @@ export default function WorkoutForm({ handleSubmit, formData, setFormData, isEdi
     };
 
     const replaceExercise = exercises => {
+        formData.exercises[indexToReplace][1].forEach(set => {
+            if (set.id) {
+                setFormData(prev => ({
+                    ...prev,
+                    setsToDelete: [...prev.setsToDelete, set.id]
+                }))
+            }
+        });
+
         setFormData(prev => ({
             ...prev,
             exercises: [
@@ -70,6 +81,15 @@ export default function WorkoutForm({ handleSubmit, formData, setFormData, isEdi
     };
 
     const deleteFormExercise = () => {
+        formData.exercises[exerciseToRemove.index][1].forEach(set => {
+            if (set.id) {
+                setFormData(prev => ({
+                    ...prev,
+                    setsToDelete: [...prev.setsToDelete, set.id]
+                }))
+            }
+        });
+
         setFormData(prev => ({
             ...prev,
             exercises: prev.exercises.filter((exercise, index) => {
@@ -124,6 +144,10 @@ export default function WorkoutForm({ handleSubmit, formData, setFormData, isEdi
                                 setReplaceModal(true);
                             }}
                             openDeleteModal={ex => openDeleteModal(ex)}
+                            addDeletedSet={(setId) => setFormData(prev => ({
+                                ...prev,
+                                setsToDelete: [...prev.setsToDelete, setId]
+                            }))}
                             setInfo={info => {
                                 setInfoExercise(prev => ({
                                     ...prev,
@@ -138,6 +162,7 @@ export default function WorkoutForm({ handleSubmit, formData, setFormData, isEdi
 
                     <button type="button" onClick={() => setExerciseModal(true)} className="button button-secondary">Add Exercises</button>
 
+                    {isEdit && error && <Error style={errorStyles['form-error']} text="Failed to save changes." />}
                 </div>
             </form>
             

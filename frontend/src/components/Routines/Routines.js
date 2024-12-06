@@ -16,7 +16,7 @@ import Routine from './Routine';
 import UseRoutine from './UseRoutine';
 import { editRoutine, deleteRoutine } from '../../api/api';
 
-export default function Routines({ workout, setWorkout }) {
+export default function Routines({ workout, setWorkout, updateModal }) {
     const { user } = useUserContext();
 
     const [addModal, setAddModal] = useState(false);
@@ -58,8 +58,10 @@ export default function Routines({ workout, setWorkout }) {
     }, [navigate, user?.id]);
 
     useEffect(() => {
-        updateRoutines();
-    }, [updateRoutines]);
+        if (!updateModal) {
+            updateRoutines();
+        }
+    }, [updateRoutines, updateModal]);
 
     const formatWorkout = () => {
         // make sets empty and use routine sets as placeholders for workout form
@@ -83,8 +85,10 @@ export default function Routines({ workout, setWorkout }) {
         });
 
         setWorkout({
+            routineId: selectedRoutine.id,
             name: selectedRoutine.name,
             exercises,
+            setsToDelete: [],
             startTime: Date.now()
         });
     };

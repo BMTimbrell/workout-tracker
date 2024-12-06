@@ -23,15 +23,7 @@ export default function HistoryWorkout({ workout, formatDate, openInfo, openEdit
                             exercises: workout.exercises[0] ? workout.exercises.map(exercise => {
                                 return [
                                     exercise.id, 
-                                    exercise.sets.map(set => {
-                                        if (unit.unit === "lbs") {
-                                            return {
-                                                ...set,
-                                                [set.weight] : convertToLbs(set.weight)
-                                            };
-                                        }
-                                        return set;
-                                    })
+                                    exercise.sets
                                 ]
                             }) : [],
                             date: workout.date,
@@ -52,10 +44,14 @@ export default function HistoryWorkout({ workout, formatDate, openInfo, openEdit
                                         if (unit.unit === "lbs") {
                                             return {
                                                 ...set,
-                                                [set.weight] : convertToLbs(set.weight)
+                                                "1RM": convertToLbs(set.one_rep_max),
+                                                weight : convertToLbs(set.weight)
                                             };
                                         }
-                                        return set;
+                                        return {
+                                            ...set,
+                                            "1RM": set.one_rep_max
+                                        };
                                     })
                                 ]
                             }) : [],

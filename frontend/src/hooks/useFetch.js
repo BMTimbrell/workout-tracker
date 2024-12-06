@@ -26,7 +26,10 @@ export default function useFetch(endpoint, options = {}, dependencies = [], url=
                         setData(json);
                         setError(false);
                     });
-                    else if (res.status === 401) setData({authorisationFailed: true});
+                    else if (res.status === 401) {
+                        setError(true);
+                        setData({authorisationFailed: true});
+                    }
                     else setError(true);
                 })
                 .catch(e => {

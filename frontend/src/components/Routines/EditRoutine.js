@@ -4,14 +4,13 @@ import { useUserContext } from '../../hooks/UserContext';
 import { useUnitContext } from '../../hooks/UnitContext';
 import RoutineForm from './RoutineForm';
 import modalStyles from '../Misc/Modal/Modal.module.css';
-import { editRoutine } from '../../api/api';
+import { editRoutine, deleteRoutine } from '../../api/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../Misc/Modal/Modal';
 import Error from '../Misc/Error/Error';
 import errorStyles from '../Misc/Error/Error.module.css';
-import { deleteRoutine } from '../../api/api';
 
 export default function EditRoutine({ closeModal, setFooter, updateRoutines, formData, setFormData, onClose }) {
     const { user } = useUserContext();

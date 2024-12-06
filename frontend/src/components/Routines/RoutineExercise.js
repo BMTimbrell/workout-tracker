@@ -21,7 +21,7 @@ export default function RoutineExercise({
     toggleSelected, 
     replace, 
     openDeleteModal,
-    removeFromDb,
+    addDeletedSet,
     setInfo
  }) {
     const { user } = useUserContext();
@@ -52,7 +52,7 @@ export default function RoutineExercise({
     const deleteSet = setIndex => {
         // remove set from db if already in db
         if (exercises[index][1][setIndex].id) {
-            removeFromDb(exercises[index][1][setIndex].id);
+            addDeletedSet(exercises[index][1][setIndex].id);
         }
 
         setExercises(exercises.map((el, elIndex) => {
@@ -143,7 +143,7 @@ export default function RoutineExercise({
                                     type="number" 
                                     value={set.weight ? set.weight : ''} 
                                     onChange={e => handleChange(e, setIndex)} 
-                                    step=".01"
+                                    step=".05"
                                 />
                                 <input 
                                     min="1" 
