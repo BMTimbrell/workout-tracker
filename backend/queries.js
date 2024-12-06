@@ -395,8 +395,9 @@ const updateRoutine = async (req, res) => {
     } = req.body;
 
     try {
-
-        await pool.query('UPDATE routines SET name = $1 WHERE id = $2 AND user_id = $3', [name, routineId, userId]);
+        if (name) {
+            await pool.query('UPDATE routines SET name = $1 WHERE id = $2 AND user_id = $3', [name, routineId, userId]);
+        }
 
         for (const set of setsToDelete) {
             await pool.query('DELETE FROM routine_sets WHERE id = $1', [set]);
@@ -622,6 +623,106 @@ const getWorkoutSetsByExercise = async (req, res) => {
     }
 };
 
+const getBestSetsByExercise = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const exerciseId = parseInt(req.params.exerciseId);
+
+    try {
+        const sets = await pool.query(
+            'SELECT DISTINCT workouts.date, workout_sets.one_rep_max, workout_sets.weight, workout_sets.reps '
+            +'FROM workouts '
+            +'JOIN workouts_exercises ON workouts.id = workouts_exercises.workout_id '
+            +'JOIN workout_sets ON workout_sets.id = workouts_exercises.set_id '
+            +'WHERE workouts_exercises.exercise_id = $1 AND workouts.user_id = $2 AND workout_sets.best_set = TRUE '
+            +'ORDER BY workouts.date', [exerciseId, userId]
+        );
+
+        return res.status(200).json({sets: sets.rows});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
+const updateWorkout = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const workoutId = parseInt(req.params.workoutId);
+    const { 
+        name, 
+        setsToDelete
+    } = req.body;
+
+    let { exercises } = req.body;
+
+    const bestSetIndexes = [];
+
+    exercises.forEach((exercise) => {
+        let bestSetIndex = 0;
+        const sets = exercise[1];
+
+        sets.forEach((set, index) => {
+            if (Number(set["1RM"]) > Number(sets[bestSetIndex]["1RM"])) {
+                bestSetIndex = index;
+            }
+        });
+
+        bestSetIndexes.push(bestSetIndex);
+    });
+
+    exercises = exercises.map((exercise, index) => {
+        exercise[1][bestSetIndexes[index]].bestSet = true;
+        return exercise;
+    });
+
+    try {
+
+        if (name) {
+            await pool.query('UPDATE workouts SET name = $1 WHERE id = $2 AND user_id = $3', [name, workoutId, userId]);
+        }
+
+        for (const set of setsToDelete) {
+            await pool.query('DELETE FROM workout_sets WHERE id = $1', [set]);
+        }
+
+        for (const [index, exercise] of exercises.entries()) {
+            for (const set of exercise[1]) {
+                if (set.id) {
+                    await pool.query('UPDATE workout_sets SET weight = $1, reps = $2, one_rep_max = $3, best_set = $4 WHERE id = $5', 
+                        [
+                            !isNaN(set.weight) ? Number(set.weight) : 0, 
+                            !isNaN(set.reps) ? parseInt(set.reps) : 0, 
+                            Math.round(Number(set["1RM"])), 
+                            set?.bestSet ? set.bestSet : false,
+                            set.id
+                        ]
+                    );
+                } else {
+                    const result = await pool.query('INSERT INTO workout_sets (weight, reps, one_rep_max, best_set) VALUES ($1, $2, $3, $4) RETURNING id', 
+                        [
+                            !isNaN(set.weight) ? Number(set.weight) : 0, 
+                            !isNaN(set.reps) ? parseInt(set.reps) : 0, 
+                            Math.round(Number(set["1RM"])), 
+                            set?.bestSet ? set.bestSet : false
+                        ]
+                    );
+
+                    set.id = result.rows[0].id;
+                }
+
+                await pool.query('INSERT INTO workouts_exercises (workout_id, exercise_id, set_id, exercise_order) VALUES ($1, $2, $3, $4) '
+                    +'ON CONFLICT (set_id) '
+                    +'DO UPDATE SET exercise_order = $4', [workoutId, exercise[0], set.id, index]);
+            }
+        }
+        
+
+        return res.status(200).json({message: 'workout updated'});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
 const deleteWorkout = async (req, res) => {
     const userId = parseInt(req.params.id);
     const workoutId = parseInt(req.params.workoutId);
@@ -669,5 +770,7 @@ module.exports = {
     getNumberRoutinesByExercise,
     getNumberWorkoutsByExercise,
     getWorkoutSetsByExercise,
+    getBestSetsByExercise,
+    updateWorkout,
     deleteWorkout
 };

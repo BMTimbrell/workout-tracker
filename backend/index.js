@@ -78,6 +78,7 @@ app.get('/users/:id/exercises/:exerciseId/routines', db.checkUserAuthorised, db.
 app.get('/users/:id/exercises/:exerciseId/workouts', db.checkUserAuthorised, db.getNumberWorkoutsByExercise);
 
 app.get('/users/:id/exercises/:exerciseId/workouts/sets', db.checkUserAuthorised, db.getWorkoutSetsByExercise);
+app.get('/users/:id/exercises/:exerciseId/workouts/best', db.checkUserAuthorised, db.getBestSetsByExercise);
 
 app.get('/users/:id/routines', db.checkUserAuthorised, db.getRoutines);
 app.post('/users/:id/routines', db.checkUserAuthorised, db.addRoutine);
@@ -86,4 +87,5 @@ app.delete('/users/:id/routines/:routineId', db.checkUserAuthorised, db.deleteRo
 
 app.get('/users/:id/workouts', db.checkUserAuthorised, db.getWorkouts);
 app.post('/users/:id/workouts', db.checkUserAuthorised, db.addWorkout);
+app.put('/users/:id/workouts/:workoutId', db.checkUserAuthorised, db.updateWorkout);
 app.delete('/users/:id/workouts/:workoutId', db.checkUserAuthorised, db.deleteWorkout);
