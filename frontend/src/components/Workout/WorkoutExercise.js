@@ -29,6 +29,7 @@ export default function WorkoutExercise({
     const { user } = useUserContext();
     const [unit] = useUnitContext();
     const [exercise, loading, error]  = useFetch(user && id && `/users/${user?.id}/exercises/${id}/name`);
+    const [recentSets, loadingRecentSets, recentSetsError]  = useFetch(user && id && `/users/${user?.id}/exercises/${id}/workouts/recent`);
 
     const [deleteModal, setDeleteModal] = useState(false);
     const [removeSet, setRemoveSet] = useState(null);
@@ -160,6 +161,7 @@ export default function WorkoutExercise({
 
                     <div className={`${styles.sets} ${workoutStyles.sets}`}>
                         <div className={styles["sets-heading"]}>Set</div>
+                        <div className={styles["sets-heading"]}>Previous</div>
                         <div className={styles["sets-heading"]}>{unit?.unit === "lbs" ? 'lbs' : 'kg'}</div>
                         <div className={styles["sets-heading"]}>Reps</div>
                         <div></div>
@@ -168,6 +170,12 @@ export default function WorkoutExercise({
                         {exercises[index][1].map((set, setIndex) => (
                             <React.Fragment key={setIndex}>
                                 <div>{setIndex + 1}</div>
+
+                                <div className={recentSets?.sets[setIndex] ? workoutStyles.previous : `${workoutStyles.previous} ${workoutStyles.empty}`}>
+                                    {recentSets?.sets[setIndex] ? 
+                                    `${unit?.unit === "lbs" ? convertToLbs(recentSets.sets[setIndex].weight) : 
+                                        recentSets.sets[setIndex].weight} x  ${recentSets.sets[setIndex].reps}` : ''}
+                                </div>
 
                                 <input 
                                     min="0" 
@@ -239,7 +247,7 @@ export default function WorkoutExercise({
             >
                 <p>
                     Are you sure you want to delete set with data&nbsp;
-                    {removeSet?.weight ? `${removeSet.weight}kg` : '0kg'} x {removeSet?.reps ? removeSet.reps : 0}.
+                    {removeSet?.weight ? `${removeSet.weight} ${unit?.unit === "lbs" ? "lbs" : "kg"}` : `0 ${unit?.unit === "lbs" ? "lbs" : "kg"}`} x {removeSet?.reps ? removeSet.reps : 0}.
                     This process can't be undone.
                 </p>
 

@@ -1,7 +1,30 @@
 .sets {
-    grid-template-columns: 1fr 2fr 2fr 1fr 1fr;
+    grid-template-columns: 1fr 3fr 2fr 2fr 1fr 1fr;
+}
+
+.previous {
+    text-align: center;
+}
+
+.empty {
+    position: relative;
+}
+
+.empty::after {
+    content: '';
+    position: absolute;
+    left: calc(50% - 0.5em);
+    height: 2px;
+    width: 1em;
+    background-color: black;
 }
 
 .sets > button:last-child {
-    grid-column: 1 / 6;
+    grid-column: 1 / 7;
+}
+
+@media (max-width: 30em) {
+    .sets * {
+        font-size: 0.875rem;
+    }
 }

@@ -37,7 +37,7 @@ export default function Home() {
                     !exercise[1].some(set => set.id === routine.removedSets.find(s => s === set.id))
                 ), 
                 routine.removedSets,
-                unit?.units
+                unit?.unit
             );
          
         } else {
@@ -45,9 +45,12 @@ export default function Home() {
                 user?.id, 
                 routine.id, 
                 "", 
-                routine.exercises, 
+                routine.exercises.map(exercise => {
+                    exercise[1] = exercise[1].filter(set => set.reps !== 0);
+                    return exercise;
+                }).filter(exercise => exercise[1].length > 0), // Only update sets with reps
                 [],
-                unit?.units
+                unit?.unit
             );
         }
 

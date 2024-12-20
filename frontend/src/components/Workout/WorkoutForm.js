@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Exercises from '../Exercises/Exercises';
 import modalStyles from '../Misc/Modal/Modal.module.css';
 import styles from '../Routines/RoutineForm.module.css';
+import workoutStyles from './WorkoutForm.module.css';
 import WorkoutExercise from './WorkoutExercise';
 import ExerciseInfoModal from '../Misc/Modal/ExerciseInfoModal';
 import Error from '../Misc/Error/Error';
@@ -101,7 +102,7 @@ export default function WorkoutForm({ handleSubmit, formData, setFormData, error
 
     return (
         <>
-            <form id={isEdit ? "editWorkoutForm" : "addWorkoutForm"} className="form" onSubmit={handleSubmit}>
+            <form id={isEdit ? "editWorkoutForm" : "addWorkoutForm"} className={`form ${workoutStyles.form}`} onSubmit={handleSubmit}>
                 <div className="input-container">
 
 

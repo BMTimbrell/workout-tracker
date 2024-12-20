@@ -339,7 +339,6 @@ export const editRoutine = async (userId, routineId, name, exercises, setsToDele
         });
     }
 
-
     try {
         const response = await fetch(`${baseUrl}/users/${userId}/routines/${routineId}`, {
             method: 'PUT',
@@ -398,6 +397,7 @@ export const addWorkout = async (id, name, exercises, time, units) => {
             return exercise;
         });
     }
+
 
     try {
         const response = await fetch(`${baseUrl}/users/${id}/workouts`, {

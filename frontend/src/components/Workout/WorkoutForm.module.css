@@ -1,0 +1,5 @@
+@media (max-width: 30em) {
+    .form {
+        padding-inline: 0.5rem;
+    }
+}

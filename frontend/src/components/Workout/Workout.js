@@ -8,6 +8,7 @@ import modalStyles from '../Misc/Modal/Modal.module.css';
 import ModalFooter from '../Misc/Modal/ModalFooter';
 import { addWorkout } from '../../api/api';
 import { useUserContext } from '../../hooks/UserContext';
+import { useUnitContext } from '../../hooks/UnitContext';
 import { useNavigate } from 'react-router-dom';
 import Error from '../Misc/Error/Error';
 
@@ -19,6 +20,7 @@ export default function Workout({
     setRoutine 
 }) {
     const { user } = useUserContext();
+    const [unit] = useUnitContext();
     const [elapsedTime, setElapsedTime] = useState(Date.now() - workout.startTime);
     const [error, setError] = useState(false);
     const [submitting, setSubmitting] = useState();
@@ -123,7 +125,7 @@ export default function Workout({
                 start: new Date(workout.startTime).toISOString(), 
                 duration: formatTime() 
             },
-            user?.units === "lbs" ? "lbs" : "kg"
+            unit?.unit === "lbs" ? "lbs" : "kg"
         );
 
         if (response?.authorizationFailed) {
