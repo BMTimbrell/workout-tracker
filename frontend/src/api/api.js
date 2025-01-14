@@ -82,6 +82,79 @@ export const fetchUser = async (id) => {
     }
 };
 
+export const updateName = async (id, name) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${id}/name`, {
+            method: 'PUT',
+            credentials: "include",
+            body: JSON.stringify({
+                name
+            }),
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+
+        if (response.status >= 500) return null;
+        
+        if (response.status === 401) return { authorisationFailed: true };
+        
+        return response.json();
+    } catch (error) {
+        return null;
+    }
+};
+
+export const updateEmail = async (id, email) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${id}/email`, {
+            method: 'PUT',
+            credentials: "include",
+            body: JSON.stringify({
+                email
+            }),
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+
+        if (response.status >= 500) return null;
+        
+        if (response.status === 401) return { authorisationFailed: true };
+        
+        return response.json();
+    } catch (error) {
+        return null;
+    }
+};
+
+export const updatePassword = async (id, password, newPassword) => {
+    try {
+        const response = await fetch(`${baseUrl}/users/${id}/password`, {
+            method: 'PUT',
+            credentials: "include",
+            body: JSON.stringify({
+                password,
+                newPassword
+            }),
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        });
+
+        if (response.status >= 500) return null;
+        
+        if (response.status === 401) return { authorisationFailed: true };
+        
+        return response.json();
+    } catch (error) {
+        return null;
+    }
+};
+
 export const getExercises = async (id, controller) => {
     try {
         const response = await fetch(`${baseUrl}/users/${id}/exercises`, {

@@ -1,0 +1,29 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+    max-width: 18.75rem;
+    margin-inline: auto;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+.user-info-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 0.5rem;
+}
+
+.user-info-container button {
+    font-size: 0.75rem;
+}
+
+.user-info {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

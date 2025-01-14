@@ -77,7 +77,7 @@ export default function Home() {
             <h1>Start Workout</h1>
 
             <p className={styles.about}>
-                This is an app for tracking workouts. You can create a workout template from a list of available, or user-made, exercises. <Link className="link" to="/login">Log in</Link> to use this app.
+                This is a web app for tracking workouts. You can create workout routines using a list of available or user-made exercises. <Link className="link" to="/login">Log in</Link> to use this app.
             </p>
         </>
     );

@@ -70,19 +70,12 @@ input {
   color: var(--link-color);
 }
 
-.link:hover {
-  text-decoration: underline;
-}
-
 .link-button {
   color: var(--link-color);
   display: inline;
   font-size: inherit;
   background: transparent;
-}
-
-.link-button:hover {
-  text-decoration: underline;
+  text-align: left;
 }
 
 .button-big {
