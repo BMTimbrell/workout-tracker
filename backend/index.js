@@ -21,7 +21,7 @@ app.use(
 );
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: process.env.PORT ? 'https://workout-tracker-nzvi.onrender.com' : 'http://localhost:3000',
     credentials: true
 }));
 
