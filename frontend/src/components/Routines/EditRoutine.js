@@ -35,7 +35,7 @@ export default function EditRoutine({ closeModal, setFooter, updateRoutines, for
             formData.name, 
             [...JSON.parse(JSON.stringify(formData)).exercises], 
             formData.setsToDelete,
-            unit?.units
+            unit?.unit
         );
         
         if (response) {

@@ -41,7 +41,7 @@ export default function HistoryWorkout({ workout, formatDate, openInfo, openEdit
                                 return [
                                     exercise.id, 
                                     exercise.sets.map(set => {
-                                        if (unit.unit === "lbs") {
+                                        if (unit?.unit === "lbs") {
                                             return {
                                                 ...set,
                                                 "1RM": convertToLbs(set.one_rep_max),

@@ -35,7 +35,7 @@ export default function Routine({ routine, openModal, setSelectedRoutine, openWo
                                 return [
                                     exercise.id, 
                                     exercise.sets.map(set => {
-                                        if (unit.unit === "lbs") {
+                                        if (unit?.unit === "lbs") {
                                             set.weight = convertToLbs(set.weight);
                                         }
                                         return set;
