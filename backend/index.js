@@ -51,6 +51,7 @@ app.put('/users/:id/password', db.checkUserAuthorised, db.checkValidPassword, db
 app.post('/register', db.checkValidEmail, db.checkValidName, db.checkValidPassword, db.checkEmailExists, db.createUser);
 app.post('/login', passport.authenticate('local', { failureRedirect: '/loginfailed', failureMessage: true }), 
     (req, res) => {
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.status(200).send({ id: req.user.id });
     }
 );
