@@ -8,14 +8,24 @@ const pool = new Pool({
     connectionString: process.env.CONNECTION_STRING
 });
 
-const checkInputValid = async (req, res, next) => {
-    const { email, name, password } = req.body;
+const checkValidEmail = async (req, res, next) => {
+    const { email } = req.body;
     const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(email))
         return res.status(400).json({error: 'invalid email'});
+    next();
+};
+
+const checkValidName = async (req, res, next) => {
+    const { name } = req.body;
     if (!name) 
         return response.status(400).json({error: 'invalid name'});
-    if (!password)
+    next();
+};
+
+const checkValidPassword = async (req, res, next) => {
+    const { password } = req.body;
+    if (!password) 
         return response.status(400).json({error: 'invalid password'});
     next();
 };
@@ -28,6 +38,59 @@ const checkEmailExists = async (req, res, next) => {
         if (isRegistered.rows.length) 
             return res.status(409).json({message: 'user already registered with this email'});
         next();
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
+const updateEmail = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        await pool.query('UPDATE users SET email = $1 WHERE id = $2', 
+        [email, parseInt(req.params.id)]);
+
+        return res.status(200).json({message: 'email updated'});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
+const updateName = async (req, res) => {
+    const { name } = req.body;
+
+    try {
+        await pool.query('UPDATE users SET name = $1 WHERE id = $2', 
+        [name, parseInt(req.params.id)]);
+
+        return res.status(200).json({message: 'name updated'});
+    } catch (error) {
+        return res.status(500).json({error});
+    }
+};
+
+const updatePassword = async (req, res) => {
+    const { password, newPassword } = req.body;
+
+    try {
+        // compare password to current one in db for match
+        const result = await pool.query('SELECT password FROM users WHERE id = $1', [parseInt(req.params.id)]);
+        const oldPassword = await result.rows[0]?.password;
+
+        const matchedPassword = await bcrypt.compare(password, oldPassword);
+
+        if (!matchedPassword) {
+            return res.status(400).json({message: "password doesn't match"});
+        }
+
+        // create new password hash and update in db
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        await pool.query('UPDATE users SET password = $1 WHERE id = $2', 
+        [hashedPassword, parseInt(req.params.id)]);
+
+        return res.status(200).json({message: 'password updated'});
     } catch (error) {
         return res.status(500).json({error});
     }
@@ -116,7 +179,6 @@ const getExercises = async (req, res) => {
 
         return res.status(200).json({exercises: exercises.rows});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -136,7 +198,6 @@ const getBodyParts = async (req, res) => {
 
         return res.status(200).json({bodyparts: result});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -174,7 +235,6 @@ const searchExercises = async (req, res) => {
 
         return res.status(200).json({exercises: exercises.rows});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -219,7 +279,6 @@ const getExerciseById = async (req, res) => {
 
         return res.status(200).json(exercise.rows[0]);
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -237,7 +296,6 @@ const getExerciseNameById = async (req, res) => {
 
         return res.status(200).json(exercise.rows[0]);
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -255,7 +313,6 @@ const getExerciseNameBodypartById = async (req, res) => {
 
         return res.status(200).json(exercise.rows[0]);
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -340,7 +397,6 @@ const getRoutines = async (req, res) => {
 
         return res.status(200).json({routines: routines.rows});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -371,7 +427,6 @@ const addRoutine = async (req, res) => {
                         await pool.query('INSERT INTO routines_exercises (routine_id, exercise_id, exercise_order, set_id) VALUES ($1, $2, $3, $4)', 
                         [routineId, Number(exercise[0]), index, setId]);
                     } catch (error) {
-                        console.log(error);
                         return res.status(500).json({error});
                     }
                 }
@@ -380,7 +435,6 @@ const addRoutine = async (req, res) => {
 
         return res.status(201).json({message: 'routine added'});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -424,7 +478,6 @@ const updateRoutine = async (req, res) => {
 
         return res.status(200).json({message: 'routine updated'});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -446,7 +499,6 @@ const deleteRoutine = async (req, res) => {
 
         return res.status(200).json({message: 'routine deleted'});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -489,7 +541,6 @@ const getWorkouts = async (req, res) => {
 
         return res.status(200).json({workouts: workouts.rows});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -544,7 +595,6 @@ const addWorkout = async (req, res) => {
                         await pool.query('INSERT INTO workouts_exercises (workout_id, exercise_id, exercise_order, set_id) VALUES ($1, $2, $3, $4)', 
                         [workoutId, Number(exercise[0]), index, setId]);
                     } catch (error) {
-                        console.log(error);
                         return res.status(500).json({error});
                     }
                 }
@@ -553,7 +603,6 @@ const addWorkout = async (req, res) => {
 
         return res.status(201).json({message: 'workout added'});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -618,7 +667,6 @@ const getWorkoutSetsByExercise = async (req, res) => {
 
         return res.status(200).json({workouts: workouts.rows});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -639,7 +687,6 @@ const getBestSetsByExercise = async (req, res) => {
 
         return res.status(200).json({sets: sets.rows});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -718,7 +765,6 @@ const updateWorkout = async (req, res) => {
 
         return res.status(200).json({message: 'workout updated'});
     } catch (error) {
-        console.log(error);
         return res.status(500).json({error});
     }
 };
@@ -740,7 +786,31 @@ const deleteWorkout = async (req, res) => {
 
         return res.status(200).json({message: 'workout deleted'});
     } catch (error) {
-        console.log(error);
+        return res.status(500).json({error});
+    }
+};
+
+const getRecentSetsByExercise = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const exerciseId = parseInt(req.params.exerciseId);
+
+    try {
+        const sets = await pool.query('SELECT workout_sets.weight, workout_sets.reps '
+            +'FROM workout_sets '
+            +'JOIN workouts_exercises ON workouts_exercises.set_id = workout_sets.id '
+            +'JOIN workouts ON workouts.id = workouts_exercises.workout_id '
+            +'JOIN ('
+            +  'SELECT MAX(workouts.date) '
+            +  'FROM workouts '
+            +  'JOIN workouts_exercises ON workouts.id = workouts_exercises.workout_id '
+            +  'WHERE workouts_exercises.exercise_id = $2 AND workouts.user_id = $1'
+            +') latest_date ON workouts.date = latest_date.max '
+            +'WHERE workouts_exercises.exercise_id = $2 AND workouts.user_id = $1 '
+            +'ORDER BY workout_sets.id', 
+        [userId, exerciseId]);
+
+        return res.status(200).json({sets: sets.rows});
+    } catch (error) {
         return res.status(500).json({error});
     }
 };
@@ -750,7 +820,12 @@ module.exports = {
     checkUserAuthorised,
     getUserById,
     checkEmailExists,
-    checkInputValid,
+    checkValidEmail,
+    checkValidName,
+    checkValidPassword,
+    updateEmail,
+    updateName,
+    updatePassword,
     createUser,
     getExercises,
     getBodyParts,
@@ -772,5 +847,6 @@ module.exports = {
     getWorkoutSetsByExercise,
     getBestSetsByExercise,
     updateWorkout,
-    deleteWorkout
+    deleteWorkout,
+    getRecentSetsByExercise
 };

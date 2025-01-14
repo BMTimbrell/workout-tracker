@@ -45,8 +45,10 @@ app.listen(port, () => {
 });
 
 app.get('/users/:id', db.checkUserAuthorised, db.getUserById);
-// app.put('/users/:id', db.checkUserAuthorised, db.checkEmailExists, db.updateUser);
-app.post('/register', db.checkInputValid, db.checkEmailExists, db.createUser);
+app.put('/users/:id/email', db.checkUserAuthorised, db.checkValidEmail, db.checkEmailExists, db.updateEmail);
+app.put('/users/:id/name', db.checkUserAuthorised, db.checkValidName, db.updateName);
+app.put('/users/:id/password', db.checkUserAuthorised, db.checkValidPassword, db.updatePassword);
+app.post('/register', db.checkValidEmail, db.checkValidName, db.checkValidPassword, db.checkEmailExists, db.createUser);
 app.post('/login', passport.authenticate('local', { failureRedirect: '/loginfailed', failureMessage: true }), 
     (req, res) => {
         res.status(200).send({ id: req.user.id });
@@ -78,6 +80,7 @@ app.get('/users/:id/exercises/:exerciseId/routines', db.checkUserAuthorised, db.
 app.get('/users/:id/exercises/:exerciseId/workouts', db.checkUserAuthorised, db.getNumberWorkoutsByExercise);
 
 app.get('/users/:id/exercises/:exerciseId/workouts/sets', db.checkUserAuthorised, db.getWorkoutSetsByExercise);
+app.get('/users/:id/exercises/:exerciseId/workouts/recent', db.checkUserAuthorised, db.getRecentSetsByExercise);
 app.get('/users/:id/exercises/:exerciseId/workouts/best', db.checkUserAuthorised, db.getBestSetsByExercise);
 
 app.get('/users/:id/routines', db.checkUserAuthorised, db.getRoutines);
@@ -89,3 +92,13 @@ app.get('/users/:id/workouts', db.checkUserAuthorised, db.getWorkouts);
 app.post('/users/:id/workouts', db.checkUserAuthorised, db.addWorkout);
 app.put('/users/:id/workouts/:workoutId', db.checkUserAuthorised, db.updateWorkout);
 app.delete('/users/:id/workouts/:workoutId', db.checkUserAuthorised, db.deleteWorkout);
+
+app.all('*', async (req, res) => {
+    try {
+        res.status(404).json({
+            message: 'No routes matched your request'
+        })
+    } catch (e) {
+        return res.status(500).json({error});
+    }
+});
