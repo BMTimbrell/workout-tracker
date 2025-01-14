@@ -7,7 +7,7 @@ const DEFAULT_OPTIONS = {
     },
 };
 
-export default function useFetch(endpoint, options = {}, dependencies = [], url='https://workout-tracker-nzvi.onrender.com/api') {
+export default function useFetch(endpoint, options = {}, dependencies = [], url='/api') {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState(null);
     const [error, setError] = useState(false);

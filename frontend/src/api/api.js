@@ -1,6 +1,6 @@
 import { convertToKg } from "../utils/utils";
 
-const baseUrl = 'https://workout-tracker-nzvi.onrender.com/api';
+const baseUrl = '/api';
 
 export const registerUser = async (name, email, password) => {
     try {
