@@ -51,14 +51,12 @@ app.put('/users/:id/email', db.checkUserAuthorised, db.checkValidEmail, db.check
 app.put('/users/:id/name', db.checkUserAuthorised, db.checkValidName, db.updateName);
 app.put('/users/:id/password', db.checkUserAuthorised, db.checkValidPassword, db.updatePassword);
 app.post('/register', db.checkValidEmail, db.checkValidName, db.checkValidPassword, db.checkEmailExists, db.createUser);
-app.post('/login', passport.authenticate('local', { failureRedirect: '/loginfailed', failureMessage: true }), 
+app.post('/login', passport.authenticate('local'), 
     (req, res) => {
         res.status(200).send({ id: req.user.id });
     }
 );
-app.get('/loginfailed', (req, res) => {
-    res.status(401).json({ message: 'wrong password' });
-});
+
 app.get('/logout', (req, res, next) => {
     req.logout((error) => {
         if (error) return next(error);
