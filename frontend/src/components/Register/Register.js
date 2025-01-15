@@ -22,8 +22,8 @@ export default function Register() {
             ) : (
                 <>
                     <h1>Registration successful!</h1>
-                    <p>
-                        <Link className="link" to="/login">Sign in</Link>
+                    <p style={{textAlign: 'center'}}>
+                        <Link className="link" to="/login">Click here</Link> to sign in.
                     </p>
                 </>
             )}
