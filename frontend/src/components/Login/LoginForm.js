@@ -27,7 +27,7 @@ export default function LoginForm() {
         setLoading(true);
         const userIdResponse = await loginUser(formData.email, formData.password);
 
-        if (userIdResponse?.message === 'wrong password') {
+        if (userIdResponse?.status === 401) {
             setError('Email or password is incorrect.');
         } else if (userIdResponse) {
             const userResponse = await fetchUser(userIdResponse.id);

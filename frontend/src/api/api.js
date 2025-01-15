@@ -41,10 +41,11 @@ export const loginUser = async (email, password) => {
             }
         });
 
-        if (response.status >= 500) return null;
-        console.log(response.json());
+        if (response.status === 401) return { status: 401 }
 
-        return response.json();
+        if (response.ok) return response.json();
+
+        return null;
     } catch (error) {
         return null;
     }
