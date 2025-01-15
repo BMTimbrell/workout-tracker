@@ -42,9 +42,11 @@ export const loginUser = async (email, password) => {
         });
 
         if (response.status >= 500) return null;
+        console.log(response);
 
         return response.json();
     } catch (error) {
+        console.log(error);
         return null;
     }
 };
