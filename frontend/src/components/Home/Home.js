@@ -79,6 +79,9 @@ export default function Home() {
             <p className={styles.about}>
                 This is a web app for tracking workouts. You can create workout routines using a list of available or user-made exercises. <Link className="link" to="/login">Log in</Link> to use this app.
             </p>
+            <p className={styles.about}>
+                Word of warning: this app is hosted on a free server which spins down on inactivity. It can take up to a minute for the server to start up.
+            </p>
         </>
     );
 
